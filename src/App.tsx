@@ -1,7 +1,9 @@
 import { Button } from '@mantine/core';
+
 import { useState } from 'react';
 import { TooltipTranslator, TranslateModal } from './components';
 import { TextWithTooltip } from './components/TextWithTooltip/TextWithTooltip';
+
 
 export const App = () => {
   const [modal, setModal] = useState(false);
