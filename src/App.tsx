@@ -1,8 +1,7 @@
-import { Button } from '@mantine/core';
+import { Box, Button, Container, Group, Title } from '@mantine/core';
 
 import { useState } from 'react';
-import { TooltipTranslator, TranslateModal } from './components';
-import { TextWithTooltip } from './components/TextWithTooltip/TextWithTooltip';
+import { TextWithTooltip, TooltipTranslator, TranslateModal } from './components';
 
 
 export const App = () => {
@@ -27,28 +26,40 @@ export const App = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-gray-50 p-6">
-      <header className="flex justify-between items-center max-w-4xl mx-auto mb-4">
-        <h1 className="text-2xl font-bold">Tooltip Translator</h1>
-        <Button onClick={() => setModal(true)}>Открыть переводчик</Button>
-      </header>
+    <Box pos="relative" mih="100vh" bg="gray.0" p="md">
+    
+    <Container size="xl">
+      <Group justify="space-between" align="center" mb="md">
+        <Title order={1} fw={700} lh={1}>
+          Tooltip Translator
+        </Title>
 
-      {openedTooltip && coords && (
-        <div
-          style={{
-            position: 'absolute',
-            top: coords.y - 10,
-            left: coords.x,
-            zIndex: 1000
-          }}
-        >
-          <TooltipTranslator setOpenedTooltip={setOpenedTooltip} selectedText={selectedText} />
-        </div>
-      )}
+        <Button onClick={() => setModal(true)}>Open translator</Button>
+      </Group>
+    </Container>
 
+    
+    {openedTooltip && coords && (
+      <Box
+        pos="absolute"
+        top={coords.y - 10}
+        left={coords.x}
+        style={{ zIndex: 1000 }}
+      >
+        <TooltipTranslator
+          setOpenedTooltip={setOpenedTooltip}
+          selectedText={selectedText}
+        />
+      </Box>
+    )}
+
+    
+    <Container size="xl">
       <TextWithTooltip onMouseUp={handleMouseUp} />
+    </Container>
 
-      <TranslateModal opened={modal} onClose={() => setModal(false)} />
-    </div>
+    
+    <TranslateModal opened={modal} onClose={() => setModal(false)} />
+  </Box>
   );
 };
