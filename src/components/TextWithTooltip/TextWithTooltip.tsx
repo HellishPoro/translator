@@ -1,14 +1,22 @@
-import { Paper } from '@mantine/core';
-
-const sampleText = `
-  Выделите часть этого текста, чтобы увидеть перевод в тултипе.
-`;
+import { Paper, Text, Title } from '@mantine/core';
+import { sampleText } from '../../constants/sampleText';
 
 export const TextWithTooltip = ({ onMouseUp }: { onMouseUp: () => void }) => {
   return (
-    <div onMouseUp={onMouseUp}>
-      {sampleText}
-      <Paper></Paper>
-    </div>
+    <Paper
+      shadow="md"
+      radius="md"
+      p="lg"
+      withBorder
+      onMouseUp={onMouseUp}
+      style={{ whiteSpace: 'pre-line', cursor: 'text' }}
+    >
+        <Title ta={"center"} style={{ borderBottom: '1px solid indigo' }} fz="h1" size="xl" c="indigo.4">
+            Frontend Development: Crafting Seamless Digital Experiences
+        </Title>
+      <Text size="lg" c="black" ta={"center"}>
+        {sampleText}
+      </Text>
+    </Paper>
   );
 };
