@@ -9,10 +9,11 @@ import {
   } from "@mantine/core";
   import { useEffect, useRef, useState } from "react";
   import { LanguageSelector, type SelectedValue } from "../LanguageSelector/LanguageSelector";
-  import { IconVolume } from "@tabler/icons-react";
+  import { IconMicrophone, IconMicrophoneOff, IconVolume } from "@tabler/icons-react";
   import { useTranslation } from "../../hooks/useTranslation";
   import { initialSelectedLanguage } from "../../constants/initialSelectedLanguage";
   import { useTranslateStore } from "../../store/useTranslateStore";
+import { useSpeechRecognition } from "../../hooks/useSpeechRecognition";
   
   export const TranslateModal = ({
     opened,
@@ -27,9 +28,7 @@ import {
     const [translation, setTranslation] = useState('');
     const [isDetectingLanguage, setIsDetectingLanguage] = useState(false);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  
     const { translateText, detectTextLanguage, isLoading, error, clearError } = useTranslation();
-  
     const [selectedLanguage, setSelectedLanguage] = useState<SelectedValue>(
       initialSelectedLanguage
     );
@@ -38,8 +37,11 @@ import {
     const setSourceText = useTranslateStore((state) => state.setSourceText);
     const setSourceLanguageCode = useTranslateStore((state) => state.setSourceLanguageCode);
     const setTargetLanguageCode = useTranslateStore((state) => state.setTargetLanguageCode);
-  
     const prevSelectedLanguageRef = useRef<SelectedValue | null>(null);
+
+    const {isListening, startListening, stopListening} = useSpeechRecognition((spokenText)=>{
+        setText((prevtext) => `${prevtext} ${spokenText}`.trim())
+    })
 
 useEffect(() => {
   const prev = prevSelectedLanguageRef.current;
@@ -159,6 +161,16 @@ useEffect(() => {
           >
             <IconVolume size={24} />
           </ActionIcon>
+          <ActionIcon
+            variant="subtle"
+            color={isListening ? "red" : "indigo.4"}
+            size="lg"
+            bottom={75}
+            left={759}
+            onClick={isListening ? stopListening : startListening}
+            >
+            {isListening ? <IconMicrophoneOff size={24} /> : <IconMicrophone size={24} />}
+          </ActionIcon>
         </Group>
   
         <Group>
@@ -180,7 +192,7 @@ useEffect(() => {
             <IconVolume size={24} />
           </ActionIcon>
         </Group>
-  
+
         {error && (
           <Text color="red" mt="sm">
             {error}
