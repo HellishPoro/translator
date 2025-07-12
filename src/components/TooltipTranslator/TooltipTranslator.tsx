@@ -5,10 +5,11 @@ import { LanguageSelector } from '../LanguageSelector/LanguageSelector';
 interface TooltipTranslatorProps {
   setOpenedTooltip: (i: boolean) => void;
   selectedText: string;
+  speak: (text: string) => void;
 }
 
 export const TooltipTranslator = (props: TooltipTranslatorProps) => {
-  const { setOpenedTooltip, selectedText } = props;
+  const { setOpenedTooltip, selectedText, speak } = props;
   const handleCloseTooltip = () => {
     setOpenedTooltip(false);
   };
@@ -45,7 +46,7 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
                 Original:
               </Text>
 
-              <ActionIcon variant="subtle" color="indigo.4" size="sm">
+              <ActionIcon variant="subtle" color="indigo.4" size="sm" onClick={() => speak(selectedText)}>
                 <IconVolume size={18} />
               </ActionIcon>
             </Group>
@@ -62,7 +63,7 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
                 Translation:
               </Text>
 
-              <ActionIcon variant="subtle" color="indigo.4" size="sm">
+              <ActionIcon variant="subtle" color="indigo.4" size="sm" onClick={() => speak('Это переведённый текст')}>
                 <IconVolume size={18} />
               </ActionIcon>
             </Group>

@@ -10,6 +10,11 @@ export const App = () => {
   const [selectedText, setSelectedText] = useState('');
   const [coords, setCoords] = useState<{ x: number; y: number } | null>(null);
 
+  const speak = (textToSpeak: string) => {
+          const voice = new SpeechSynthesisUtterance(textToSpeak);
+          speechSynthesis.speak(voice);
+      }
+
   const handleMouseUp = () => {
     const selection = window.getSelection();
     if (selection && selection.toString().trim().length > 0) {
@@ -49,6 +54,7 @@ export const App = () => {
         <TooltipTranslator
           setOpenedTooltip={setOpenedTooltip}
           selectedText={selectedText}
+          speak={speak}
         />
       </Box>
     )}
@@ -59,7 +65,7 @@ export const App = () => {
     </Container>
 
     
-    <TranslateModal opened={modal} onClose={() => setModal(false)} />
+    <TranslateModal speak={speak} opened={modal} onClose={() => setModal(false)} />
   </Box>
   );
 };

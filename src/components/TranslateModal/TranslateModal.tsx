@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import { LanguageSelector } from "../LanguageSelector/LanguageSelector";
 import { IconVolume } from "@tabler/icons-react";
 
-export const TranslateModal = ({opened, onClose}: {opened: boolean, onClose: () => void}) => {
+export const TranslateModal = ({opened, onClose, speak}: {opened: boolean, onClose: () => void, speak: (text: string) => void}) => {
     const [loading, setLoading] = useState(false);
     const [text, setText] = useState('');
     const [translation, setTranslation] = useState('');
@@ -59,7 +59,14 @@ export const TranslateModal = ({opened, onClose}: {opened: boolean, onClose: () 
                 size="lg"
                 style={{ width: "100%"}}
                 />
-                <ActionIcon variant="subtle" color="indigo.4" size="lg" bottom={105} left={810}>
+                <ActionIcon 
+                variant="subtle" 
+                color="indigo.4" 
+                size="lg" 
+                bottom={105} 
+                left={810}
+                onClick={() => speak(text)}
+                >
                     <IconVolume size={24} />
                 </ActionIcon>
             </Group>
@@ -73,7 +80,14 @@ export const TranslateModal = ({opened, onClose}: {opened: boolean, onClose: () 
                     style={{ width: "100%"}}
                     />
                     
-                    <ActionIcon variant="subtle" color="indigo.4" size="lg" bottom={90} left={810}>
+                    <ActionIcon 
+                    variant="subtle" 
+                    color="indigo.4" 
+                    size="lg" 
+                    bottom={90} 
+                    left={810}
+                    onClick={() => speak(translation)}
+                    >
                         <IconVolume size={24} />
                     </ActionIcon>
                 </Group>
