@@ -4,6 +4,7 @@ import {
   ActionIcon,
   type OptionsFilter,
   type ComboboxItem,
+  Loader
 } from '@mantine/core';
 import { IconArrowsLeftRight, IconArrowsRight } from '@tabler/icons-react';
 import { useCallback, useMemo } from 'react';
@@ -27,27 +28,25 @@ interface LanguageSelectorProps {
   isDetectingLanguage: boolean;
 }
 
-export function LanguageSelector(props: LanguageSelector) {
+export function LanguageSelector(props: LanguageSelectorProps) {
   const { onChange, value, swapLanguages = true, languages, isDetectingLanguage } = props;
 
   const languagesOptions = useMemo(
     () =>
-      languages.map((language) => ({
+      languages.map(language => ({
         value: language.code,
-        label: language.name,
+        label: language.name
       })),
     [languages]
   );
 
   const handleSourceChange = useCallback(
     (newValue: string | null) => {
-      const selectedOption = languagesOptions.find(
-        (option) => option.value === newValue
-      );
+      const selectedOption = languagesOptions.find(option => option.value === newValue);
       if (selectedOption) {
         onChange({
           ...value,
-          source: selectedOption,
+          source: selectedOption
         });
       }
     },
@@ -56,13 +55,11 @@ export function LanguageSelector(props: LanguageSelector) {
 
   const handleTargetChange = useCallback(
     (newValue: string | null) => {
-      const selectedOption = languagesOptions.find(
-        (option) => option.value === newValue
-      );
+      const selectedOption = languagesOptions.find(option => option.value === newValue);
       if (selectedOption) {
         onChange({
           ...value,
-          target: selectedOption,
+          target: selectedOption
         });
       }
     },
@@ -72,20 +69,15 @@ export function LanguageSelector(props: LanguageSelector) {
   const handleSwapLanguages = useCallback(() => {
     onChange({
       source: value.target,
-      target: value.source,
+      target: value.source
     });
   }, [value, onChange]);
 
   const optionsSourceFilter: OptionsFilter = useCallback(
     ({ options, search }) => {
       const filtered = (options as ComboboxItem[])
-        .filter((option) => option.value !== value.target.value)
-        .filter((option) =>
-          option.label
-            .toLowerCase()
-            .trim()
-            .includes(search.toLowerCase().trim())
-        );
+        .filter(option => option.value !== value.target.value)
+        .filter(option => option.label.toLowerCase().trim().includes(search.toLowerCase().trim()));
       return filtered;
     },
     [value.target.value]
@@ -94,13 +86,8 @@ export function LanguageSelector(props: LanguageSelector) {
   const optionsTargetFilter: OptionsFilter = useCallback(
     ({ options, search }) => {
       const filtered = (options as ComboboxItem[])
-        .filter((option) => option.value !== value.source.value)
-        .filter((option) =>
-          option.label
-            .toLowerCase()
-            .trim()
-            .includes(search.toLowerCase().trim())
-        );
+        .filter(option => option.value !== value.source.value)
+        .filter(option => option.label.toLowerCase().trim().includes(search.toLowerCase().trim()));
       return filtered;
     },
     [value.source.value]
@@ -116,7 +103,7 @@ export function LanguageSelector(props: LanguageSelector) {
         style={{ flex: 1 }}
         comboboxProps={{
           withinPortal: false,
-          transitionProps: { transition: 'pop', duration: 200 },
+          transitionProps: { transition: 'pop', duration: 200 }
         }}
         disabled={!swapLanguages}
         filter={optionsSourceFilter}
@@ -124,12 +111,7 @@ export function LanguageSelector(props: LanguageSelector) {
         searchable
       />
       {swapLanguages ? (
-        <ActionIcon
-          variant="subtle"
-          color="gray"
-          size="sm"
-          onClick={handleSwapLanguages}
-        >
+        <ActionIcon variant="subtle" color="gray" size="sm" onClick={handleSwapLanguages}>
           <IconArrowsLeftRight size={16} />
         </ActionIcon>
       ) : (
@@ -143,7 +125,7 @@ export function LanguageSelector(props: LanguageSelector) {
         style={{ flex: 1 }}
         comboboxProps={{
           withinPortal: false,
-          transitionProps: { transition: 'pop', duration: 200 },
+          transitionProps: { transition: 'pop', duration: 200 }
         }}
         filter={optionsTargetFilter}
         searchable
