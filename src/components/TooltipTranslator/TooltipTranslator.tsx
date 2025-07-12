@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import {
   ActionIcon,
@@ -7,22 +6,16 @@ import {
   Divider,
   Flex,
   Group,
-
   Loader,
   Paper,
   Stack,
   Text,
-  Title
+  Title,
 } from '@mantine/core';
 import { IconAlertCircle, IconVolume, IconX } from '@tabler/icons-react';
 import { useTranslateStore } from '../../store/useTranslateStore';
 import { useTranslation } from '../../hooks/useTranslation';
-import {
-  LanguageSelector,
-  type SelectedValue,
-} from '../LanguageSelector/LanguageSelector';
-import { initialSelectedLanguage } from '../../constants/initialSelectedLanguage';
-
+import { LanguageSelector } from '../LanguageSelector/LanguageSelector';
 
 interface TooltipTranslatorProps {
   setOpenedTooltip: (i: boolean) => void;
@@ -31,17 +24,12 @@ interface TooltipTranslatorProps {
 }
 
 export const TooltipTranslator = (props: TooltipTranslatorProps) => {
-
-  const { setOpenedTooltip, selectedText, speak  } = props;
-  const { targetLanguageCode, setSourceText } = useTranslateStore();
-  const { translateText, detectTextLanguage, isLoading, error, clearError } = useTranslation();
+  const { setOpenedTooltip, selectedText, speak } = props;
+  const { selectedLanguage, setSelectedLanguage, languages } =
+    useTranslateStore();
+  const { translateText, isLoading, error, clearError, isDetectingLanguage } =
+    useTranslation();
   const [translatedText, setTranslatedText] = useState<string>('');
-  const [isDetectingLanguage, setIsDetectingLanguage] = useState<boolean>(false);
-  const languages = useTranslateStore((state) => state.languages);
-  const [selectedLanguage, setSelectedLanguage] = useState<SelectedValue>(
-    initialSelectedLanguage
-  );
-
 
   const handleCloseTooltip = () => {
     setOpenedTooltip(false);
@@ -51,25 +39,33 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
 
   useEffect(() => {
     if (selectedText.trim()) {
-      setSourceText(selectedText);
-
       const doTranslation = async () => {
-        setIsDetectingLanguage(true);
-        const detectedLang = await detectTextLanguage(selectedText);
-        setIsDetectingLanguage(false);
+        const translated = await translateText(
+          selectedText,
+          selectedLanguage.target.value
+        );
 
-        if (detectedLang) {
-          const translated = await translateText(selectedText, targetLanguageCode, detectedLang);
-
-          if (translated) {
-            setTranslatedText(translated);
+        if (translated) {
+          setTranslatedText(translated.text);
+          if (translated.detectedSourceLanguage) {
+            setSelectedLanguage({
+              source: {
+                value: translated.detectedSourceLanguage,
+                label:
+                  languages.find(
+                    (language) =>
+                      language.code === translated.detectedSourceLanguage
+                  )?.name || translated.detectedSourceLanguage,
+              },
+              target: selectedLanguage.target,
+            });
           }
         }
       };
 
       doTranslation();
     }
-  }, [selectedText, targetLanguageCode]);
+  }, [selectedText, selectedLanguage.target]);
 
   return (
     <Paper
@@ -115,7 +111,12 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
                 Original:
               </Text>
 
-              <ActionIcon variant="subtle" color="indigo.4" size="sm" onClick={() => speak(selectedText)}>
+              <ActionIcon
+                variant="subtle"
+                color="indigo.4"
+                size="sm"
+                onClick={() => speak(selectedText)}
+              >
                 <IconVolume size={18} />
               </ActionIcon>
             </Group>
@@ -132,7 +133,12 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
                 Translation:
               </Text>
 
-              <ActionIcon variant="subtle" color="indigo.4" size="sm" onClick={() => speak('Это переведённый текст')}>
+              <ActionIcon
+                variant="subtle"
+                color="indigo.4"
+                size="sm"
+                onClick={() => speak(translatedText || '')}
+              >
                 <IconVolume size={18} />
               </ActionIcon>
             </Group>
@@ -144,11 +150,20 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
                 </Text>
               </Group>
             ) : error ? (
-              <Alert icon={<IconAlertCircle size={16} />} color="red" variant="light">
+              <Alert
+                icon={<IconAlertCircle size={16} />}
+                color="red"
+                variant="light"
+              >
                 {error}
               </Alert>
             ) : (
-              <Text size="sm" fw={600} c="indigo.7" style={{ wordBreak: 'break-word' }}>
+              <Text
+                size="sm"
+                fw={600}
+                c="indigo.7"
+                style={{ wordBreak: 'break-word' }}
+              >
                 {translatedText || 'Выберите текст для перевода'}
               </Text>
             )}

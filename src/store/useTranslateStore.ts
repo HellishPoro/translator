@@ -1,24 +1,22 @@
 import { create } from 'zustand';
 import type { Language } from '../types/api.types';
+import type { SelectedValue } from '../components';
+import { initialSelectedLanguage } from '../constants/initialSelectedLanguage';
 
 interface TranslateState {
   sourceText: string;
-  sourceLanguageCode: string;
-  targetLanguageCode: string;
+  selectedLanguage: SelectedValue;
   languages: Language[];
   setSourceText: (text: string) => void;
-  setTargetLanguageCode: (language: string) => void;
-  setSourceLanguageCode: (language: string) => void;
   setLanguages: (languages: Language[]) => void;
+  setSelectedLanguage: (language: SelectedValue) => void;
 }
 
-export const useTranslateStore = create<TranslateState>(set => ({
+export const useTranslateStore = create<TranslateState>((set) => ({
   sourceText: '', //выделенный текст
-  targetLanguageCode: 'ru',
-  sourceLanguageCode: 'en', //язык, который определился от api
   languages: [],
+  selectedLanguage: initialSelectedLanguage,
   setSourceText: (text) => set({ sourceText: text }),
-  setTargetLanguageCode: (language) => set({ targetLanguageCode: language }),
-  setSourceLanguageCode: (language) => set({ sourceLanguageCode: language }), //триггер определение языка
   setLanguages: (languages) => set({ languages: languages }),
+  setSelectedLanguage: (language) => set({ selectedLanguage: language }),
 }));

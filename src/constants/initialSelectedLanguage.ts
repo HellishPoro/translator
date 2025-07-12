@@ -1,4 +1,4 @@
 export const initialSelectedLanguage = {
-    target: { value: 'en', label: 'English' },
-    source: { value: 'ru', label: 'Russian' },
-  };
+  target: { value: 'ru', label: 'русский' },
+  source: { value: 'en', label: 'English' },
+};

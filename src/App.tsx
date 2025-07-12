@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Box, Container } from '@mantine/core';
-import { Header, TextWithTooltip, TooltipTranslator, TranslateModal } from './components';
+import {
+  Header,
+  TextWithTooltip,
+  TooltipTranslator,
+  TranslateModal,
+} from './components';
 import { getLanguages } from './api/apiTranslation';
 import { useTranslateStore } from './store/useTranslateStore';
 import { usePageTranslation } from './hooks/usePageTranslation';
@@ -9,13 +14,13 @@ export const App = () => {
   const [modal, setModal] = useState(false);
   const [openedTooltip, setOpenedTooltip] = useState(false);
   const [coords, setCoords] = useState<{ x: number; y: number } | null>(null);
-  const { sourceText, setSourceText } = useTranslateStore();
-  const setLanguages = useTranslateStore(state => state.setLanguages);
+  const { sourceText, setSourceText, setLanguages } = useTranslateStore();
   const [pageLang, setPageLang] = useState<string | null>('en');
-  const { pageContent, translatePageContent, isTranslating } = usePageTranslation();
+  const { pageContent, translatePageContent, isTranslating } =
+    usePageTranslation();
 
   useEffect(() => {
-    getLanguages().then(languages => {
+    getLanguages().then((languages) => {
       if ('message' in languages) {
         console.log(languages.message);
       } else {
@@ -44,7 +49,7 @@ export const App = () => {
 
       setCoords({
         x: rect.left + window.scrollX,
-        y: rect.bottom + window.scrollY + 15
+        y: rect.bottom + window.scrollY + 15,
       });
       setOpenedTooltip(true);
       setSourceText(chosenText);
@@ -56,10 +61,19 @@ export const App = () => {
 
   return (
     <Box pos="relative" mih="100vh" bg="gray.0" p="md">
-      <Header pageLang={pageLang} setPageLang={setPageLang} onOpenModal={() => setModal(true)} />
+      <Header
+        pageLang={pageLang}
+        setPageLang={setPageLang}
+        onOpenModal={() => setModal(true)}
+      />
 
       {openedTooltip && coords && (
-        <Box pos="absolute" top={coords.y - 10} left={coords.x} style={{ zIndex: 1000 }}>
+        <Box
+          pos="absolute"
+          top={coords.y - 10}
+          left={coords.x}
+          style={{ zIndex: 1000 }}
+        >
           <TooltipTranslator
             setOpenedTooltip={setOpenedTooltip}
             selectedText={sourceText}
@@ -76,7 +90,11 @@ export const App = () => {
         />
       </Container>
 
-      <TranslateModal speak={speak} opened={modal} onClose={() => setModal(false)} />
+      <TranslateModal
+        speak={speak}
+        opened={modal}
+        onClose={() => setModal(false)}
+      />
     </Box>
   );
 };

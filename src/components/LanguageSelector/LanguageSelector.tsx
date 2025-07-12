@@ -4,7 +4,7 @@ import {
   ActionIcon,
   type OptionsFilter,
   type ComboboxItem,
-  Loader
+  Loader,
 } from '@mantine/core';
 import { IconArrowsLeftRight, IconArrowsRight } from '@tabler/icons-react';
 import { useCallback, useMemo } from 'react';
@@ -29,24 +29,35 @@ interface LanguageSelectorProps {
 }
 
 export function LanguageSelector(props: LanguageSelectorProps) {
-  const { onChange, value, swapLanguages = true, languages, isDetectingLanguage } = props;
+  const {
+    onChange,
+    value,
+    swapLanguages = true,
+    languages,
+    isDetectingLanguage,
+  } = props;
 
   const languagesOptions = useMemo(
     () =>
-      languages.map(language => ({
+      languages.map((language) => ({
         value: language.code,
-        label: language.name
+        label: language.name,
       })),
     [languages]
   );
 
   const handleSourceChange = useCallback(
     (newValue: string | null) => {
-      const selectedOption = languagesOptions.find(option => option.value === newValue);
-      if (selectedOption) {
+      const selectedOption = languagesOptions.find(
+        (option) => option.value === newValue
+      );
+      if (selectedOption || newValue === 'auto') {
         onChange({
           ...value,
-          source: selectedOption
+          source:
+            newValue === 'auto'
+              ? { value: 'auto', label: 'Auto' }
+              : selectedOption!,
         });
       }
     },
@@ -55,11 +66,13 @@ export function LanguageSelector(props: LanguageSelectorProps) {
 
   const handleTargetChange = useCallback(
     (newValue: string | null) => {
-      const selectedOption = languagesOptions.find(option => option.value === newValue);
+      const selectedOption = languagesOptions.find(
+        (option) => option.value === newValue
+      );
       if (selectedOption) {
         onChange({
           ...value,
-          target: selectedOption
+          target: selectedOption,
         });
       }
     },
@@ -69,15 +82,20 @@ export function LanguageSelector(props: LanguageSelectorProps) {
   const handleSwapLanguages = useCallback(() => {
     onChange({
       source: value.target,
-      target: value.source
+      target: value.source,
     });
   }, [value, onChange]);
 
   const optionsSourceFilter: OptionsFilter = useCallback(
     ({ options, search }) => {
       const filtered = (options as ComboboxItem[])
-        .filter(option => option.value !== value.target.value)
-        .filter(option => option.label.toLowerCase().trim().includes(search.toLowerCase().trim()));
+        .filter((option) => option.value !== value.target.value)
+        .filter((option) =>
+          option.label
+            .toLowerCase()
+            .trim()
+            .includes(search.toLowerCase().trim())
+        );
       return filtered;
     },
     [value.target.value]
@@ -86,8 +104,13 @@ export function LanguageSelector(props: LanguageSelectorProps) {
   const optionsTargetFilter: OptionsFilter = useCallback(
     ({ options, search }) => {
       const filtered = (options as ComboboxItem[])
-        .filter(option => option.value !== value.source.value)
-        .filter(option => option.label.toLowerCase().trim().includes(search.toLowerCase().trim()));
+        .filter((option) => option.value !== value.source.value)
+        .filter((option) =>
+          option.label
+            .toLowerCase()
+            .trim()
+            .includes(search.toLowerCase().trim())
+        );
       return filtered;
     },
     [value.source.value]
@@ -99,19 +122,24 @@ export function LanguageSelector(props: LanguageSelectorProps) {
         size="sm"
         value={isDetectingLanguage ? null : value.source.value}
         onChange={handleSourceChange}
-        data={languagesOptions}
+        data={[{ value: 'auto', label: 'Auto' }, ...languagesOptions]}
         style={{ flex: 1 }}
         comboboxProps={{
           withinPortal: false,
-          transitionProps: { transition: 'pop', duration: 200 }
+          transitionProps: { transition: 'pop', duration: 200 },
         }}
         disabled={!swapLanguages}
         filter={optionsSourceFilter}
         rightSection={isDetectingLanguage ? <Loader size="xs" /> : null}
         searchable
       />
-      {swapLanguages ? (
-        <ActionIcon variant="subtle" color="gray" size="sm" onClick={handleSwapLanguages}>
+      {swapLanguages || value.source.value === 'auto' ? (
+        <ActionIcon
+          variant="subtle"
+          color="gray"
+          size="sm"
+          onClick={handleSwapLanguages}
+        >
           <IconArrowsLeftRight size={16} />
         </ActionIcon>
       ) : (
@@ -125,7 +153,7 @@ export function LanguageSelector(props: LanguageSelectorProps) {
         style={{ flex: 1 }}
         comboboxProps={{
           withinPortal: false,
-          transitionProps: { transition: 'pop', duration: 200 }
+          transitionProps: { transition: 'pop', duration: 200 },
         }}
         filter={optionsTargetFilter}
         searchable
