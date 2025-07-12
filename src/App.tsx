@@ -21,6 +21,11 @@ export const App = () => {
     });
   }, []);
 
+  const speak = (textToSpeak: string) => {
+          const voice = new SpeechSynthesisUtterance(textToSpeak);
+          speechSynthesis.speak(voice);
+      }
+
   const handleMouseUp = () => {
     const selection = window.getSelection();
     if (selection && selection.toString().trim().length > 0) {
@@ -52,17 +57,22 @@ export const App = () => {
         </Group>
       </Container>
 
+
       {openedTooltip && coords && (
         <Box pos="absolute" top={coords.y - 10} left={coords.x} style={{ zIndex: 1000 }}>
-          <TooltipTranslator setOpenedTooltip={setOpenedTooltip} selectedText={sourceText} />
+          <TooltipTranslator setOpenedTooltip={setOpenedTooltip} selectedText={sourceText} speak={speak}/>
         </Box>
       )}
+
 
       <Container size="xl">
         <TextWithTooltip onMouseUp={handleMouseUp} />
       </Container>
 
-      <TranslateModal opened={modal} onClose={() => setModal(false)} />
-    </Box>
+
+    
+    <TranslateModal speak={speak} opened={modal} onClose={() => setModal(false)} />
+  </Box>
+
   );
 };

@@ -26,6 +26,7 @@ import {
 interface TooltipTranslatorProps {
   setOpenedTooltip: (i: boolean) => void;
   selectedText: string;
+  speak: (text: string) => void;
 }
 
 const initialSelectedLanguage = {
@@ -34,7 +35,8 @@ const initialSelectedLanguage = {
 };
 
 export const TooltipTranslator = (props: TooltipTranslatorProps) => {
-  const { setOpenedTooltip, selectedText } = props;
+
+  const { setOpenedTooltip, selectedText, speak  } = props;
   const { targetLanguageCode, setSourceText } = useTranslateStore();
   const { translateText, detectTextLanguage, isLoading, error, clearError } = useTranslation();
   const [translatedText, setTranslatedText] = useState<string>('');
@@ -43,6 +45,7 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
   const [selectedLanguage, setSelectedLanguage] = useState<SelectedValue>(
     initialSelectedLanguage
   );
+
 
   const handleCloseTooltip = () => {
     setOpenedTooltip(false);
@@ -116,7 +119,7 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
                 Original:
               </Text>
 
-              <ActionIcon variant="subtle" color="indigo.4" size="sm">
+              <ActionIcon variant="subtle" color="indigo.4" size="sm" onClick={() => speak(selectedText)}>
                 <IconVolume size={18} />
               </ActionIcon>
             </Group>
@@ -133,7 +136,7 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
                 Translation:
               </Text>
 
-              <ActionIcon variant="subtle" color="indigo.4" size="sm">
+              <ActionIcon variant="subtle" color="indigo.4" size="sm" onClick={() => speak('Это переведённый текст')}>
                 <IconVolume size={18} />
               </ActionIcon>
             </Group>
