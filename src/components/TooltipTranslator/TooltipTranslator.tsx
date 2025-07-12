@@ -21,6 +21,7 @@ import {
   LanguageSelector,
   type SelectedValue,
 } from '../LanguageSelector/LanguageSelector';
+import { initialSelectedLanguage } from '../../constants/initialSelectedLanguage';
 
 
 interface TooltipTranslatorProps {
@@ -28,11 +29,6 @@ interface TooltipTranslatorProps {
   selectedText: string;
   speak: (text: string) => void;
 }
-
-const initialSelectedLanguage = {
-  target: { value: 'en', label: 'English' },
-  source: { value: 'ru', label: 'Russian' },
-};
 
 export const TooltipTranslator = (props: TooltipTranslatorProps) => {
 
