@@ -12,10 +12,11 @@ import {
   LanguageSelector,
   type SelectedValue,
 } from '../LanguageSelector/LanguageSelector';
-import { IconVolume } from '@tabler/icons-react';
+import { IconMicrophone, IconMicrophoneOff, IconVolume } from '@tabler/icons-react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { initialSelectedLanguage } from '../../constants/initialSelectedLanguage';
 import { useTranslateStore } from '../../store/useTranslateStore';
+import { useSpeechRecognition } from "../../hooks/useSpeechRecognition";
 
 export const TranslateModal = ({
   opened,
@@ -40,6 +41,10 @@ export const TranslateModal = ({
   const languages = useTranslateStore((state) => state.languages);
 
   const prevSelectedLanguageRef = useRef<SelectedValue | null>(null);
+      
+  const {isListening, startListening, stopListening} = useSpeechRecognition((spokenText)=>{
+        setText((prevtext) => `${prevtext} ${spokenText}`.trim())
+  })
 
   useEffect(() => {
     const prev = prevSelectedLanguageRef.current;
@@ -162,6 +167,16 @@ export const TranslateModal = ({
         >
           <IconVolume size={24} />
         </ActionIcon>
+        <ActionIcon
+            variant="subtle"
+            color={isListening ? "red" : "indigo.4"}
+            size="lg"
+            bottom={75}
+            left={759}
+            onClick={isListening ? stopListening : startListening}
+            >
+            {isListening ? <IconMicrophoneOff size={24} /> : <IconMicrophone size={24} />}
+          </ActionIcon>
       </Group>
 
       <Group>
