@@ -1,21 +1,27 @@
+
+import { useEffect, useState } from 'react';
 import {
   ActionIcon,
+  Alert,
   Box,
   Divider,
   Flex,
   Group,
+
+  Loader,
   Paper,
   Stack,
   Text,
-  Title,
+  Title
 } from '@mantine/core';
-import { IconVolume, IconX } from '@tabler/icons-react';
+import { IconAlertCircle, IconVolume, IconX } from '@tabler/icons-react';
+import { useTranslateStore } from '../../store/useTranslateStore';
+import { useTranslation } from '../../hooks/useTranslation';
 import {
   LanguageSelector,
   type SelectedValue,
 } from '../LanguageSelector/LanguageSelector';
-import { useState } from 'react';
-import { useTranslateStore } from '../../store/useTranslateStore';
+
 
 interface TooltipTranslatorProps {
   setOpenedTooltip: (i: boolean) => void;
@@ -29,13 +35,43 @@ const initialSelectedLanguage = {
 
 export const TooltipTranslator = (props: TooltipTranslatorProps) => {
   const { setOpenedTooltip, selectedText } = props;
+  const { targetLanguageCode, setSourceText } = useTranslateStore();
+  const { translateText, detectTextLanguage, isLoading, error, clearError } = useTranslation();
+  const [translatedText, setTranslatedText] = useState<string>('');
+  const [isDetectingLanguage, setIsDetectingLanguage] = useState<boolean>(false);
   const languages = useTranslateStore((state) => state.languages);
   const [selectedLanguage, setSelectedLanguage] = useState<SelectedValue>(
     initialSelectedLanguage
   );
+
   const handleCloseTooltip = () => {
     setOpenedTooltip(false);
+    setTranslatedText('');
+    clearError();
   };
+
+  useEffect(() => {
+    if (selectedText.trim()) {
+      setSourceText(selectedText);
+
+      const doTranslation = async () => {
+        setIsDetectingLanguage(true);
+        const detectedLang = await detectTextLanguage(selectedText);
+        setIsDetectingLanguage(false);
+
+        if (detectedLang) {
+          const translated = await translateText(selectedText, targetLanguageCode, detectedLang);
+
+          if (translated) {
+            setTranslatedText(translated);
+          }
+        }
+      };
+
+      doTranslation();
+    }
+  }, [selectedText, targetLanguageCode]);
+
   return (
     <Paper
       shadow="xl"
@@ -68,6 +104,7 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
           value={selectedLanguage}
           onChange={setSelectedLanguage}
           swapLanguages={false}
+          isDetectingLanguage={isDetectingLanguage}
         />
 
         <Divider />
@@ -100,14 +137,22 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
                 <IconVolume size={18} />
               </ActionIcon>
             </Group>
-            <Text
-              size="sm"
-              fw={600}
-              c="indigo.7"
-              style={{ wordBreak: 'break-word' }}
-            >
-              Это переведённый текст
-            </Text>
+            {isLoading ? (
+              <Group gap="xs">
+                <Loader size="sm" />
+                <Text size="sm" c="dimmed">
+                  Переводим...
+                </Text>
+              </Group>
+            ) : error ? (
+              <Alert icon={<IconAlertCircle size={16} />} color="red" variant="light">
+                {error}
+              </Alert>
+            ) : (
+              <Text size="sm" fw={600} c="indigo.7" style={{ wordBreak: 'break-word' }}>
+                {translatedText || 'Выберите текст для перевода'}
+              </Text>
+            )}
           </Flex>
         </Box>
       </Stack>

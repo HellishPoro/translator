@@ -12,13 +12,13 @@ interface TranslateState {
   setLanguages: (languages: Language[]) => void;
 }
 
-export const useTranslateStore = create<TranslateState>((set) => ({
-  sourceText: '',
+export const useTranslateStore = create<TranslateState>(set => ({
+  sourceText: '', //выделенный текст
   targetLanguageCode: 'ru',
-  sourceLanguageCode: 'en',
+  sourceLanguageCode: 'en', //язык, который определился от api
   languages: [],
   setSourceText: (text) => set({ sourceText: text }),
   setTargetLanguageCode: (language) => set({ targetLanguageCode: language }),
-  setSourceLanguageCode: (language) => set({ sourceLanguageCode: language }),
+  setSourceLanguageCode: (language) => set({ sourceLanguageCode: language }), //триггер определение языка
   setLanguages: (languages) => set({ languages: languages }),
 }));

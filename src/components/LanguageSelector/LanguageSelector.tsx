@@ -19,15 +19,16 @@ export interface SelectedValue {
   source: Option;
 }
 
-interface LanguageSelector {
+interface LanguageSelectorProps {
   onChange: (value: SelectedValue) => void;
   value: SelectedValue;
   swapLanguages?: boolean;
   languages: Language[];
+  isDetectingLanguage: boolean;
 }
 
 export function LanguageSelector(props: LanguageSelector) {
-  const { onChange, value, swapLanguages = true, languages } = props;
+  const { onChange, value, swapLanguages = true, languages, isDetectingLanguage } = props;
 
   const languagesOptions = useMemo(
     () =>
@@ -109,7 +110,7 @@ export function LanguageSelector(props: LanguageSelector) {
     <Group gap="xs" align="center" mb="xs">
       <Select
         size="sm"
-        value={value.source.value}
+        value={isDetectingLanguage ? null : value.source.value}
         onChange={handleSourceChange}
         data={languagesOptions}
         style={{ flex: 1 }}
@@ -119,6 +120,7 @@ export function LanguageSelector(props: LanguageSelector) {
         }}
         disabled={!swapLanguages}
         filter={optionsSourceFilter}
+        rightSection={isDetectingLanguage ? <Loader size="xs" /> : null}
         searchable
       />
       {swapLanguages ? (
