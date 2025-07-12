@@ -15,6 +15,7 @@ import {
   type SelectedValue,
 } from '../LanguageSelector/LanguageSelector';
 import { useState } from 'react';
+import { useTranslateStore } from '../../store/useTranslateStore';
 
 interface TooltipTranslatorProps {
   setOpenedTooltip: (i: boolean) => void;
@@ -28,6 +29,7 @@ const initialSelectedLanguage = {
 
 export const TooltipTranslator = (props: TooltipTranslatorProps) => {
   const { setOpenedTooltip, selectedText } = props;
+  const languages = useTranslateStore((state) => state.languages);
   const [selectedLanguage, setSelectedLanguage] = useState<SelectedValue>(
     initialSelectedLanguage
   );
@@ -62,8 +64,10 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
         </Group>
 
         <LanguageSelector
+          languages={languages}
           value={selectedLanguage}
           onChange={setSelectedLanguage}
+          swapLanguages={false}
         />
 
         <Divider />

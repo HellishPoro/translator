@@ -5,9 +5,9 @@ import {
   type OptionsFilter,
   type ComboboxItem,
 } from '@mantine/core';
-import { IconArrowsLeftRight } from '@tabler/icons-react';
-import { useTranslateStore } from '../../store/useTranslateStore';
+import { IconArrowsLeftRight, IconArrowsRight } from '@tabler/icons-react';
 import { useCallback, useMemo } from 'react';
+import type { Language } from '../../types/api.types';
 
 interface Option {
   value: string;
@@ -22,11 +22,12 @@ export interface SelectedValue {
 interface LanguageSelector {
   onChange: (value: SelectedValue) => void;
   value: SelectedValue;
+  swapLanguages?: boolean;
+  languages: Language[];
 }
 
 export function LanguageSelector(props: LanguageSelector) {
-  const { onChange, value } = props;
-  const languages = useTranslateStore((state) => state.languages);
+  const { onChange, value, swapLanguages = true, languages } = props;
 
   const languagesOptions = useMemo(
     () =>
@@ -116,19 +117,22 @@ export function LanguageSelector(props: LanguageSelector) {
           withinPortal: false,
           transitionProps: { transition: 'pop', duration: 200 },
         }}
+        disabled={!swapLanguages}
         filter={optionsSourceFilter}
         searchable
       />
-
-      <ActionIcon
-        variant="subtle"
-        color="gray"
-        size="sm"
-        onClick={handleSwapLanguages}
-      >
-        <IconArrowsLeftRight size={16} />
-      </ActionIcon>
-
+      {swapLanguages ? (
+        <ActionIcon
+          variant="subtle"
+          color="gray"
+          size="sm"
+          onClick={handleSwapLanguages}
+        >
+          <IconArrowsLeftRight size={16} />
+        </ActionIcon>
+      ) : (
+        <IconArrowsRight color="gray" size={16} />
+      )}
       <Select
         size="sm"
         value={value.target.value}
