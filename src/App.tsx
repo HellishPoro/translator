@@ -1,6 +1,7 @@
 import { Box, Button, Container, Group, Title } from '@mantine/core';
-import { useState } from 'react';
 import { TextWithTooltip, TooltipTranslator, TranslateModal } from './components';
+import { useEffect, useState } from 'react';
+import { getLanguages } from './api/apiTranslation';
 import { useTranslateStore } from './store/useTranslateStore';
 
 export const App = () => {
@@ -8,6 +9,17 @@ export const App = () => {
   const [openedTooltip, setOpenedTooltip] = useState(false);
   const [coords, setCoords] = useState<{ x: number; y: number } | null>(null);
   const { sourceText, setSourceText } = useTranslateStore();
+  const setLanguages = useTranslateStore((state) => state.setLanguages);
+
+  useEffect(() => {
+    getLanguages().then((languages) => {
+      if ('message' in languages) {
+        console.log(languages.message);
+      } else {
+        setLanguages(languages);
+      }
+    });
+  }, []);
 
   const handleMouseUp = () => {
     const selection = window.getSelection();
@@ -16,7 +28,10 @@ export const App = () => {
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
 
-      setCoords({ x: rect.left + window.scrollX, y: rect.bottom + window.scrollY + 15 });
+      setCoords({
+        x: rect.left + window.scrollX,
+        y: rect.bottom + window.scrollY + 15,
+      });
       setOpenedTooltip(true);
       setSourceText(chosenText);
     } else {

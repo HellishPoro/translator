@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import {
   ActionIcon,
@@ -6,6 +7,7 @@ import {
   Divider,
   Flex,
   Group,
+
   Loader,
   Paper,
   Stack,
@@ -13,14 +15,23 @@ import {
   Title
 } from '@mantine/core';
 import { IconAlertCircle, IconVolume, IconX } from '@tabler/icons-react';
-import { LanguageSelector } from '../LanguageSelector/LanguageSelector';
 import { useTranslateStore } from '../../store/useTranslateStore';
 import { useTranslation } from '../../hooks/useTranslation';
+import {
+  LanguageSelector,
+  type SelectedValue,
+} from '../LanguageSelector/LanguageSelector';
+
 
 interface TooltipTranslatorProps {
   setOpenedTooltip: (i: boolean) => void;
   selectedText: string;
 }
+
+const initialSelectedLanguage = {
+  target: { value: 'en', label: 'English' },
+  source: { value: 'ru', label: 'Russian' },
+};
 
 export const TooltipTranslator = (props: TooltipTranslatorProps) => {
   const { setOpenedTooltip, selectedText } = props;
@@ -28,6 +39,10 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
   const { translateText, detectTextLanguage, isLoading, error, clearError } = useTranslation();
   const [translatedText, setTranslatedText] = useState<string>('');
   const [isDetectingLanguage, setIsDetectingLanguage] = useState<boolean>(false);
+  const languages = useTranslateStore((state) => state.languages);
+  const [selectedLanguage, setSelectedLanguage] = useState<SelectedValue>(
+    initialSelectedLanguage
+  );
 
   const handleCloseTooltip = () => {
     setOpenedTooltip(false);
@@ -65,7 +80,7 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
       style={{
         maxWidth: 340,
         minWidth: 300,
-        border: '1px solid #e9ecef'
+        border: '1px solid #e9ecef',
       }}
     >
       <Stack gap="sm">
@@ -74,12 +89,23 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
             Translation
           </Title>
 
-          <ActionIcon variant="subtle" color="gray" size="sm" onClick={handleCloseTooltip}>
+          <ActionIcon
+            variant="subtle"
+            color="gray"
+            size="sm"
+            onClick={handleCloseTooltip}
+          >
             <IconX size={18} />
           </ActionIcon>
         </Group>
 
-        <LanguageSelector isDetectingLanguage={isDetectingLanguage} />
+        <LanguageSelector
+          languages={languages}
+          value={selectedLanguage}
+          onChange={setSelectedLanguage}
+          swapLanguages={false}
+          isDetectingLanguage={isDetectingLanguage}
+        />
 
         <Divider />
 
