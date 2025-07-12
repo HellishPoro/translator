@@ -4,8 +4,7 @@ export interface Language {
 }
 
 export interface TranslateResponse {
-  translations: { text: string }[];
-  detectedSourceLanguage?: string;
+  translations: { text: string; detectedLanguageCode: string }[];
 }
 
 export interface DetectLanguageResponse {
