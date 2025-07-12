@@ -3,6 +3,7 @@ import { Box, Container } from '@mantine/core';
 import { Header, TextWithTooltip, TooltipTranslator, TranslateModal } from './components';
 import { getLanguages } from './api/apiTranslation';
 import { useTranslateStore } from './store/useTranslateStore';
+import { usePageTranslation } from './hooks/usePageTranslation';
 
 export const App = () => {
   const [modal, setModal] = useState(false);
@@ -10,7 +11,8 @@ export const App = () => {
   const [coords, setCoords] = useState<{ x: number; y: number } | null>(null);
   const { sourceText, setSourceText } = useTranslateStore();
   const setLanguages = useTranslateStore(state => state.setLanguages);
-  const [pageLang, setPageLang] = useState<string | null>(null);
+  const [pageLang, setPageLang] = useState<string | null>('en');
+  const { pageContent, translatePageContent, isTranslating } = usePageTranslation();
 
   useEffect(() => {
     getLanguages().then(languages => {
@@ -21,6 +23,12 @@ export const App = () => {
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (pageLang) {
+      translatePageContent(pageLang);
+    }
+  }, [pageLang, translatePageContent]);
 
   const speak = (textToSpeak: string) => {
     const voice = new SpeechSynthesisUtterance(textToSpeak);
@@ -61,7 +69,11 @@ export const App = () => {
       )}
 
       <Container size="xl">
-        <TextWithTooltip onMouseUp={handleMouseUp} />
+        <TextWithTooltip
+          onMouseUp={handleMouseUp}
+          pageContent={pageContent}
+          isTranslating={isTranslating}
+        />
       </Container>
 
       <TranslateModal speak={speak} opened={modal} onClose={() => setModal(false)} />

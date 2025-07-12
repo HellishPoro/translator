@@ -1,7 +1,30 @@
-import { List, Paper, Text, Title } from '@mantine/core';
-import { sampleText } from '../../constants/sampleText';
+import { List, Paper, Text, Title, Loader, Box } from '@mantine/core';
 
-export const TextWithTooltip = ({ onMouseUp }: { onMouseUp: () => void }) => {
+interface TextWithTooltipProps {
+  onMouseUp: () => void;
+  pageContent: {
+    title: string;
+    mainText: string;
+  };
+  isTranslating: boolean;
+}
+
+export const TextWithTooltip = ({
+  onMouseUp,
+  pageContent,
+  isTranslating
+}: TextWithTooltipProps) => {
+  if (isTranslating) {
+    return (
+      <Box ta="center" py="xl">
+        <Loader size="lg" />
+        <Text mt="md" c="dimmed">
+          Переводим контент...
+        </Text>
+      </Box>
+    );
+  }
+
   return (
     <>
       <Paper
@@ -19,16 +42,16 @@ export const TextWithTooltip = ({ onMouseUp }: { onMouseUp: () => void }) => {
           size="xl"
           c="indigo.4"
         >
-          Frontend Development: Crafting Seamless Digital Experiences
+          {pageContent.title}
         </Title>
         <Text size="lg" c="black" ta={'center'}>
-          {sampleText}
+          {pageContent.mainText}
         </Text>
       </Paper>
 
       <Paper shadow="xs" radius="md" p="md" withBorder mt={50}>
         <Title size="md" mb="xs" c="indigo.6">
-          Как пользоваться переводчиком
+          Как пользоваться приложением
         </Title>
         <List spacing={2} size="sm" listStyleType="disc" withPadding>
           <List.Item>
