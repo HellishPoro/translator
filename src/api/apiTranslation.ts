@@ -1,10 +1,10 @@
-import { apiClient } from './apiClient';
 import type {
   ApiError,
   DetectLanguageResponse,
   Language,
   TranslateResponse,
-} from './types';
+} from '../types/api.types';
+import { apiClient } from './apiClient';
 import { axiosError } from './axiosError';
 
 export const getLanguages = async (): Promise<Language[] | ApiError> => {
@@ -20,7 +20,7 @@ export const getLanguages = async (): Promise<Language[] | ApiError> => {
 };
 
 export const translate = async (
-  texts: string,
+  texts: string[],
   targetLanguageCode: string,
   sourceLanguageCode?: string
 ): Promise<TranslateResponse | ApiError> => {

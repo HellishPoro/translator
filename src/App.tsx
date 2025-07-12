@@ -1,14 +1,25 @@
 import { Box, Button, Container, Group, Title } from '@mantine/core';
-
-import { useState } from 'react';
 import { TextWithTooltip, TooltipTranslator, TranslateModal } from './components';
-
+import { useEffect, useState } from 'react';
+import { getLanguages } from './api/apiTranslation';
+import { useTranslateStore } from './store/useTranslateStore';
 
 export const App = () => {
   const [modal, setModal] = useState(false);
   const [openedTooltip, setOpenedTooltip] = useState(false);
-  const [selectedText, setSelectedText] = useState('');
   const [coords, setCoords] = useState<{ x: number; y: number } | null>(null);
+  const { sourceText, setSourceText } = useTranslateStore();
+  const setLanguages = useTranslateStore((state) => state.setLanguages);
+
+  useEffect(() => {
+    getLanguages().then((languages) => {
+      if ('message' in languages) {
+        console.log(languages.message);
+      } else {
+        setLanguages(languages);
+      }
+    });
+  }, []);
 
   const speak = (textToSpeak: string) => {
           const voice = new SpeechSynthesisUtterance(textToSpeak);
@@ -22,50 +33,46 @@ export const App = () => {
       const range = selection.getRangeAt(0);
       const rect = range.getBoundingClientRect();
 
-      setCoords({ x: rect.left + window.scrollX, y: rect.bottom + window.scrollY + 15 });
+      setCoords({
+        x: rect.left + window.scrollX,
+        y: rect.bottom + window.scrollY + 15,
+      });
       setOpenedTooltip(true);
-      setSelectedText(chosenText);
+      setSourceText(chosenText);
     } else {
       setOpenedTooltip(false);
+      setSourceText('');
     }
   };
 
   return (
     <Box pos="relative" mih="100vh" bg="gray.0" p="md">
-    
-    <Container size="xl">
-      <Group justify="space-between" align="center" mb="md">
-        <Title order={1} fw={700} lh={1}>
-          Tooltip Translator
-        </Title>
+      <Container size="xl">
+        <Group justify="space-between" align="center" mb="md">
+          <Title order={1} fw={700} lh={1}>
+            Tooltip Translator
+          </Title>
 
-        <Button onClick={() => setModal(true)}>Open translator</Button>
-      </Group>
-    </Container>
+          <Button onClick={() => setModal(true)}>Open translator</Button>
+        </Group>
+      </Container>
 
-    
-    {openedTooltip && coords && (
-      <Box
-        pos="absolute"
-        top={coords.y - 10}
-        left={coords.x}
-        style={{ zIndex: 1000 }}
-      >
-        <TooltipTranslator
-          setOpenedTooltip={setOpenedTooltip}
-          selectedText={selectedText}
-          speak={speak}
-        />
-      </Box>
-    )}
 
-    
-    <Container size="xl">
-      <TextWithTooltip onMouseUp={handleMouseUp} />
-    </Container>
+      {openedTooltip && coords && (
+        <Box pos="absolute" top={coords.y - 10} left={coords.x} style={{ zIndex: 1000 }}>
+          <TooltipTranslator setOpenedTooltip={setOpenedTooltip} selectedText={sourceText} speak={speak}/>
+        </Box>
+      )}
+
+
+      <Container size="xl">
+        <TextWithTooltip onMouseUp={handleMouseUp} />
+      </Container>
+
 
     
     <TranslateModal speak={speak} opened={modal} onClose={() => setModal(false)} />
   </Box>
+
   );
 };
