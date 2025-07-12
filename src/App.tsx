@@ -1,6 +1,6 @@
-import { Box, Button, Container, Group, Title } from '@mantine/core';
-import { TextWithTooltip, TooltipTranslator, TranslateModal } from './components';
 import { useEffect, useState } from 'react';
+import { Box, Container } from '@mantine/core';
+import { Header, TextWithTooltip, TooltipTranslator, TranslateModal } from './components';
 import { getLanguages } from './api/apiTranslation';
 import { useTranslateStore } from './store/useTranslateStore';
 
@@ -9,10 +9,11 @@ export const App = () => {
   const [openedTooltip, setOpenedTooltip] = useState(false);
   const [coords, setCoords] = useState<{ x: number; y: number } | null>(null);
   const { sourceText, setSourceText } = useTranslateStore();
-  const setLanguages = useTranslateStore((state) => state.setLanguages);
+  const setLanguages = useTranslateStore(state => state.setLanguages);
+  const [pageLang, setPageLang] = useState<string | null>(null);
 
   useEffect(() => {
-    getLanguages().then((languages) => {
+    getLanguages().then(languages => {
       if ('message' in languages) {
         console.log(languages.message);
       } else {
@@ -22,9 +23,9 @@ export const App = () => {
   }, []);
 
   const speak = (textToSpeak: string) => {
-          const voice = new SpeechSynthesisUtterance(textToSpeak);
-          speechSynthesis.speak(voice);
-      }
+    const voice = new SpeechSynthesisUtterance(textToSpeak);
+    speechSynthesis.speak(voice);
+  };
 
   const handleMouseUp = () => {
     const selection = window.getSelection();
@@ -35,7 +36,7 @@ export const App = () => {
 
       setCoords({
         x: rect.left + window.scrollX,
-        y: rect.bottom + window.scrollY + 15,
+        y: rect.bottom + window.scrollY + 15
       });
       setOpenedTooltip(true);
       setSourceText(chosenText);
@@ -47,32 +48,23 @@ export const App = () => {
 
   return (
     <Box pos="relative" mih="100vh" bg="gray.0" p="md">
-      <Container size="xl">
-        <Group justify="space-between" align="center" mb="md">
-          <Title order={1} fw={700} lh={1}>
-            Tooltip Translator
-          </Title>
-
-          <Button onClick={() => setModal(true)}>Open translator</Button>
-        </Group>
-      </Container>
-
+      <Header pageLang={pageLang} setPageLang={setPageLang} onOpenModal={() => setModal(true)} />
 
       {openedTooltip && coords && (
         <Box pos="absolute" top={coords.y - 10} left={coords.x} style={{ zIndex: 1000 }}>
-          <TooltipTranslator setOpenedTooltip={setOpenedTooltip} selectedText={sourceText} speak={speak}/>
+          <TooltipTranslator
+            setOpenedTooltip={setOpenedTooltip}
+            selectedText={sourceText}
+            speak={speak}
+          />
         </Box>
       )}
-
 
       <Container size="xl">
         <TextWithTooltip onMouseUp={handleMouseUp} />
       </Container>
 
-
-    
-    <TranslateModal speak={speak} opened={modal} onClose={() => setModal(false)} />
-  </Box>
-
+      <TranslateModal speak={speak} opened={modal} onClose={() => setModal(false)} />
+    </Box>
   );
 };
