@@ -9,11 +9,11 @@ interface TranslateState {
   setSourceLanguageCode: (language: string) => void;
 }
 
-export const useTranslateStore = create<TranslateState>((set) => ({
-  sourceText: '',
+export const useTranslateStore = create<TranslateState>(set => ({
+  sourceText: '', //выделенный текст
   targetLanguageCode: 'ru',
-  sourceLanguageCode: 'en',
-  setSourceText: (text) => set({ sourceText: text }),
-  setTargetLanguageCode: (language) => set({ targetLanguageCode: language }),
-  setSourceLanguageCode: (language) => set({ sourceLanguageCode: language }),
+  sourceLanguageCode: 'en', //язык, который определился от api
+  setSourceText: text => set({ sourceText: text }),
+  setTargetLanguageCode: language => set({ targetLanguageCode: language }),
+  setSourceLanguageCode: language => set({ sourceLanguageCode: language }) //триггер определение языка
 }));
