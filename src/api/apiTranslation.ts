@@ -20,7 +20,7 @@ export const getLanguages = async (): Promise<Language[] | ApiError> => {
 };
 
 export const translate = async (
-  texts: string[],
+  texts: string,
   targetLanguageCode: string,
   sourceLanguageCode?: string
 ): Promise<TranslateResponse | ApiError> => {
