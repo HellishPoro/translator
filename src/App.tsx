@@ -3,8 +3,8 @@ import { Homepage } from './pages';
 import { lazy, Suspense } from 'react';
 import { Center, Loader } from '@mantine/core';
 const Glossary = lazy(() =>
-  import('./pages').then(module => ({
-    default: module.Glossary
+  import('./pages').then((module) => ({
+    default: module.Glossary,
   }))
 );
 
