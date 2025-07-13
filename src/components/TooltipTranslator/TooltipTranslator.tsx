@@ -17,9 +17,8 @@ import { IconAlertCircle, IconDeviceIpadPlus, IconVolume, IconX } from '@tabler/
 import { useTranslateStore } from '../../store/useTranslateStore';
 import { useTranslation } from '../../hooks';
 import { LanguageSelector } from '../LanguageSelector/LanguageSelector';
-import { useGlossaryStore } from '../../store/useGlossaryStore';
-import { notifications } from '@mantine/notifications';
 import { useFloatingTooltip } from '../../hooks/useFloatingTooltip';
+import { useGlossaryAction } from '../../hooks/useGlossaryAction';
 
 interface TooltipTranslatorProps {
   speak: (text: string) => void;
@@ -32,8 +31,7 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
   const [translatedText, setTranslatedText] = useState<string>('');
   const { refs, floatingStyles, openedTooltip, getFloatingProps, closeTooltip, sourceText } =
     useFloatingTooltip();
-  const { addItem: addToGlossary } = useGlossaryStore();
-  const [existsInGlossary, setExistsInGlossary] = useState(false);
+  const { addToGlossary, existsInGlossary } = useGlossaryAction();
 
   const handleCloseTooltip = () => {
     closeTooltip();
@@ -41,10 +39,10 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
     clearError();
   };
 
-  const handleAddToGlossary = async () => {
+  const handleAddToGlossary = () => {
     if (!translatedText) return;
 
-    const success = await addToGlossary({
+    addToGlossary({
       originalText: sourceText,
       translatedText: translatedText,
       sourceLanguage: selectedLanguage.source.value,
@@ -52,21 +50,6 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
       sourceLanguageName: selectedLanguage.source.label,
       targetLanguageName: selectedLanguage.target.label
     });
-
-    if (success) {
-      notifications.show({
-        title: 'Success',
-        message: 'Word added to glossary!',
-        color: 'green'
-      });
-      setExistsInGlossary(true);
-    } else {
-      notifications.show({
-        title: 'Already exists',
-        message: 'This word is already in your glossary',
-        color: 'orange'
-      });
-    }
   };
 
   useEffect(() => {
@@ -125,8 +108,6 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
               swapLanguages={false}
               isDetectingLanguage={isDetectingLanguage}
             />
-
-            {/* <Divider /> */}
 
             <Flex direction="column">
               <Group justify="space-between">

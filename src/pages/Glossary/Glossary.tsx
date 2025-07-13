@@ -52,10 +52,7 @@ export function Glossary() {
   if (isLoading) {
     return (
       <Center h="100vh">
-        <Stack align="center" gap="md">
-          <Loader size="lg" />
-          <Text>Loading glossary...</Text>
-        </Stack>
+        <Loader color="blue" size="lg" />
       </Center>
     );
   }

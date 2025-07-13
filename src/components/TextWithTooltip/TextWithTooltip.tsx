@@ -9,43 +9,42 @@ interface TextWithTooltipProps {
   isTranslating: boolean;
 }
 
-export const TextWithTooltip = memo(
-  ({ pageContent, isTranslating }: TextWithTooltipProps) => {
-    if (isTranslating) {
-      return (
-        <Box ta="center" py="xl">
-          <Loader size="lg" />
-          <Text mt="md" c="dimmed">
-            Переводим контент...
-          </Text>
-        </Box>
-      );
-    }
-
+export const TextWithTooltip = memo(({ pageContent, isTranslating }: TextWithTooltipProps) => {
+  if (isTranslating) {
     return (
-      <>
-        <Paper
-          shadow="md"
-          radius="md"
-          p="lg"
-          withBorder
-          style={{ whiteSpace: 'pre-line', cursor: 'text' }}
-        >
-          <Title
-            ta={'center'}
-            style={{ borderBottom: '1px solid indigo' }}
-            fz="h1"
-            size="xl"
-            c="indigo.4"
-          >
-            {pageContent.title}
-          </Title>
-          <Text size="lg" c="black" ta={'center'}>
-            {pageContent.mainText}
-          </Text>
-        </Paper>
+      <Box ta="center" py="xl">
+        <Loader size="lg" />
+        <Text mt="md" c="dimmed">
+          Переводим контент...
+        </Text>
+      </Box>
+    );
+  }
 
-        <Paper shadow="xs" radius="md" p="md" withBorder mt={50}>
+  return (
+    <>
+      <Paper
+        shadow="md"
+        radius="md"
+        p="lg"
+        withBorder
+        style={{ whiteSpace: 'pre-line', cursor: 'text' }}
+      >
+        <Title
+          ta={'center'}
+          style={{ borderBottom: '1px solid indigo' }}
+          fz="h1"
+          size="xl"
+          c="black"
+        >
+          {pageContent.title}
+        </Title>
+        <Text size="lg" c="black" ta={'center'}>
+          {pageContent.mainText}
+        </Text>
+      </Paper>
+
+      <Paper shadow="xs" radius="md" p="md" withBorder mt={50}>
         <Title size="md" mb="xs" c="indigo.6">
           Как пользоваться приложением
         </Title>
@@ -75,7 +74,6 @@ export const TextWithTooltip = memo(
           </List.Item>
         </List>
       </Paper>
-      </>
-    );
-  }
-);
+    </>
+  );
+});
