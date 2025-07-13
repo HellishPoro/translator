@@ -115,73 +115,71 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
               isDetectingLanguage={isDetectingLanguage}
             />
 
+            {/* <Divider /> */}
+
+            <Flex direction="column">
+              <Group justify="space-between">
+                <Text size="sm" c="dimmed" fw={500}>
+                  Original:
+                </Text>
+
+                <ActionIcon
+                  variant="subtle"
+                  color="indigo.4"
+                  size="sm"
+                  onClick={() => speak(sourceText)}
+                >
+                  <IconVolume size={18} />
+                </ActionIcon>
+              </Group>
+              <Text size="sm" fw={600} style={{ wordBreak: 'break-word' }}>
+                {sourceText}
+              </Text>
+            </Flex>
+
             <Divider />
 
-            <Box>
-              <Flex direction="column" mb="sm">
-                <Group justify="space-between" mb="xs">
-                  <Text size="sm" c="dimmed" fw={500}>
-                    Original:
-                  </Text>
-
-                  <ActionIcon
-                    variant="subtle"
-                    color="indigo.4"
-                    size="sm"
-                    onClick={() => speak(sourceText)}
-                  >
-                    <IconVolume size={18} />
-                  </ActionIcon>
-                </Group>
-                <Text size="sm" fw={600} style={{ wordBreak: 'break-word' }}>
-                  {sourceText}
+            <Flex direction="column" mb="xs">
+              <Group justify="space-between" mb="xs">
+                <Text size="sm" c="dimmed" fw={500}>
+                  Translated text:
                 </Text>
-              </Flex>
-            </Box>
 
-            <Box>
-              <Flex direction="column" mb="xs">
-                <Group justify="space-between" mb="xs">
-                  <Text size="sm" c="dimmed" fw={500}>
-                    Translation:
+                <ActionIcon
+                  variant="subtle"
+                  color="indigo.4"
+                  size="sm"
+                  onClick={() => speak(translatedText || '')}
+                >
+                  <IconVolume size={18} />
+                </ActionIcon>
+              </Group>
+              {isLoading ? (
+                <Group gap="xs">
+                  <Loader size="xs" />
+                  <Text size="sm" c="dimmed">
+                    Translate...
                   </Text>
-
-                  <ActionIcon
-                    variant="subtle"
-                    color="indigo.4"
-                    size="sm"
-                    onClick={() => speak(translatedText || '')}
-                  >
-                    <IconVolume size={18} />
-                  </ActionIcon>
                 </Group>
-                {isLoading ? (
-                  <Group gap="xs">
-                    <Loader size="sm" />
-                    <Text size="sm" c="dimmed">
-                      Переводим...
-                    </Text>
-                  </Group>
-                ) : error ? (
-                  <Alert
-                    icon={<IconAlertCircle size={16} />}
-                    color="red"
-                    variant="light"
-                  >
-                    {error}
-                  </Alert>
-                ) : (
-                  <Text
-                    size="sm"
-                    fw={600}
-                    c="indigo.7"
-                    style={{ wordBreak: 'break-word' }}
-                  >
-                    {translatedText || 'Выберите текст для перевода'}
-                  </Text>
-                )}
-              </Flex>
-            </Box>
+              ) : error ? (
+                <Alert
+                  icon={<IconAlertCircle size={16} />}
+                  color="red"
+                  variant="light"
+                >
+                  {error}
+                </Alert>
+              ) : (
+                <Text
+                  size="sm"
+                  fw={600}
+                  c="indigo.7"
+                  style={{ wordBreak: 'break-word' }}
+                >
+                  {translatedText || 'Выберите текст для перевода'}
+                </Text>
+              )}
+            </Flex>
           </Stack>
         </Paper>
       </Box>
