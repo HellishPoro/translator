@@ -120,6 +120,7 @@ export function LanguageSelector(props: LanguageSelectorProps) {
     <Group gap="xs" align="center" mb="xs">
       <Select
         size="sm"
+        radius={'md'}
         value={isDetectingLanguage ? null : value.source.value}
         onChange={handleSourceChange}
         data={[{ value: 'auto', label: 'Auto' }, ...languagesOptions]}
@@ -133,12 +134,13 @@ export function LanguageSelector(props: LanguageSelectorProps) {
         rightSection={isDetectingLanguage ? <Loader size="xs" /> : null}
         searchable
       />
-      {swapLanguages || value.source.value === 'auto' ? (
+      {swapLanguages ? (
         <ActionIcon
           variant="subtle"
           color="gray"
           size="sm"
           onClick={handleSwapLanguages}
+          disabled={value.source.value === 'auto'}
         >
           <IconArrowsLeftRight size={16} />
         </ActionIcon>
@@ -147,6 +149,7 @@ export function LanguageSelector(props: LanguageSelectorProps) {
       )}
       <Select
         size="sm"
+        radius={'md'}
         value={value.target.value}
         onChange={handleTargetChange}
         data={languagesOptions}

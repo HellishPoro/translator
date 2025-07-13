@@ -4,19 +4,26 @@ import {
   Modal,
   Textarea,
   Title,
-  Loader,
   Text,
+  Box,
 } from '@mantine/core';
 import { useEffect, useRef, useState } from 'react';
 import {
   LanguageSelector,
   type SelectedValue,
 } from '../LanguageSelector/LanguageSelector';
-import { IconMicrophone, IconMicrophoneOff, IconVolume } from '@tabler/icons-react';
+import {
+  IconMicrophone,
+  IconMicrophoneOff,
+  IconVolume,
+  IconCopy,
+  IconCheck,
+} from '@tabler/icons-react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { initialSelectedLanguage } from '../../constants/initialSelectedLanguage';
 import { useTranslateStore } from '../../store/useTranslateStore';
-import { useSpeechRecognition } from "../../hooks/useSpeechRecognition";
+import { useSpeechRecognition } from '../../hooks/useSpeechRecognition';
+import { useClipboard } from '@mantine/hooks';
 
 export const TranslateModal = ({
   opened,
@@ -41,10 +48,14 @@ export const TranslateModal = ({
   const languages = useTranslateStore((state) => state.languages);
 
   const prevSelectedLanguageRef = useRef<SelectedValue | null>(null);
-      
-  const {isListening, startListening, stopListening} = useSpeechRecognition((spokenText)=>{
-        setText((prevtext) => `${prevtext} ${spokenText}`.trim())
-  })
+
+  const { isListening, startListening, stopListening } = useSpeechRecognition(
+    (spokenText) => {
+      setText((prevtext) => `${prevtext} ${spokenText}`.trim());
+    }
+  );
+
+  const clipboard = useClipboard({ timeout: 500 });
 
   useEffect(() => {
     const prev = prevSelectedLanguageRef.current;
@@ -131,81 +142,115 @@ export const TranslateModal = ({
       centered
       closeOnClickOutside={false}
       closeOnEscape={false}
+      title={
+        <Title variant="light" c="indigo.4" size="lg">
+          Translation
+        </Title>
+      }
     >
-      <Title variant="light" c="indigo.4" size="lg">
-        Translation
-      </Title>
+      <LanguageSelector
+        languages={languages}
+        value={selectedLanguage}
+        onChange={setSelectedLanguage}
+        swapLanguages={true}
+        isDetectingLanguage={isDetectingLanguage}
+      />
 
-      <Group grow mt="md" mb="md">
-        <LanguageSelector
-          languages={languages}
-          value={selectedLanguage}
-          onChange={setSelectedLanguage}
-          swapLanguages={true}
-          isDetectingLanguage={isDetectingLanguage}
-        />
-      </Group>
-
-      <Group>
-        <Textarea
-          placeholder="Enter text"
-          value={text}
-          onChange={(e) => setText(e.currentTarget.value)}
-          minRows={5}
-          mt="md"
-          mb="md"
-          size="lg"
-          style={{ width: '100%' }}
-        />
-        <ActionIcon
-          variant="subtle"
-          color="indigo.4"
-          size="lg"
-          bottom={105}
-          left={810}
-          onClick={() => speak(text)}
-        >
-          <IconVolume size={24} />
-        </ActionIcon>
-        <ActionIcon
+      <Group grow gap={'calc(1.375rem + var(--mantine-spacing-xs)*2)'}>
+        <Box pl={'xs'} pr={'xs'} mb={'xs'} bdrs={'md'}>
+          <Textarea
+            placeholder="Enter text"
+            value={text}
+            onChange={(e) => setText(e.currentTarget.value)}
+            minRows={10}
+            maxRows={10}
+            size="md"
+            autosize
+            variant="unstyled"
+          />
+          <ActionIcon
             variant="subtle"
-            color={isListening ? "red" : "indigo.4"}
+            color={isListening ? 'red' : 'indigo.4'}
             size="lg"
-            bottom={75}
-            left={759}
-            onClick={isListening ? stopListening : startListening}
-            >
-            {isListening ? <IconMicrophoneOff size={24} /> : <IconMicrophone size={24} />}
+            onClick={() => {
+              if (isListening) {
+                stopListening();
+              } else {
+                startListening();
+                setText('');
+              }
+            }}
+          >
+            {isListening ? (
+              <IconMicrophoneOff size={24} />
+            ) : (
+              <IconMicrophone size={24} />
+            )}
           </ActionIcon>
-      </Group>
+          <ActionIcon
+            variant="subtle"
+            color="indigo.4"
+            size="lg"
+            onClick={() => speak(text)}
+          >
+            <IconVolume
+              size={24}
+              visibility={translation.length > 0 ? 'visible' : 'hidden'}
+            />
+          </ActionIcon>
+        </Box>
 
-      <Group>
-        <Textarea
-          readOnly
-          value={isLoading ? 'Loading...' : translation}
-          placeholder="Translation"
-          size="lg"
-          style={{ width: '100%' }}
-        />
-        <ActionIcon
-          variant="subtle"
-          color="indigo.4"
-          size="lg"
-          bottom={90}
-          left={810}
-          onClick={() => speak(translation)}
+        <Box
+          bg={'var(--mantine-color-gray-1)'}
+          pl={'xs'}
+          pr={'xs'}
+          pb={'xs'}
+          bdrs={'md'}
         >
-          <IconVolume size={24} />
-        </ActionIcon>
+          <Textarea
+            readOnly
+            value={isLoading ? 'Translate...' : translation}
+            placeholder="Translation"
+            size="md"
+            bd={0}
+            variant="unstyled"
+            autosize
+            minRows={10}
+            maxRows={10}
+          />
+          <ActionIcon
+            variant="subtle"
+            color="indigo.4"
+            size="lg"
+            onClick={() => speak(translation)}
+          >
+            <IconVolume
+              size={24}
+              visibility={translation.length > 0 ? 'visible' : 'hidden'}
+            />
+          </ActionIcon>
+          <ActionIcon
+            variant="subtle"
+            color={clipboard.copied ? 'teal' : 'indigo.4'}
+            size="lg"
+            onClick={() => clipboard.copy(translation)}
+          >
+            {clipboard.copied ? (
+              <IconCheck size={24} />
+            ) : (
+              <IconCopy
+                size={24}
+                visibility={translation.length > 0 ? 'visible' : 'hidden'}
+              />
+            )}
+          </ActionIcon>
+        </Box>
       </Group>
-
       {error && (
         <Text c="red" mt="sm">
           {error}
         </Text>
       )}
-
-      {isLoading && <Loader mt="md" />}
     </Modal>
   );
 };

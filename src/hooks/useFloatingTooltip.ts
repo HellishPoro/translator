@@ -15,7 +15,7 @@ export const useFloatingTooltip = () => {
   const [sourceText, setSourceText] = useState('');
 
   const { refs, floatingStyles, context } = useFloating({
-    placement: 'top',
+    placement: 'bottom',
     open: openedTooltip,
     onOpenChange: setOpenedTooltip,
     middleware: [inline(), flip(), shift()],
@@ -55,7 +55,7 @@ export const useFloatingTooltip = () => {
       console.error('Ошибка при работе с выделением:', error);
       setOpenedTooltip(false);
     }
-  }, 200);
+  }, 100);
 
   useEffect(() => {
     function handleMouseUp(event: MouseEvent) {
