@@ -1,3 +1,12 @@
+
+<!-- import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Homepage } from './pages';
+import { lazy, Suspense } from 'react';
+const Glossary = lazy(() =>
+  import('./pages').then(module => ({
+    default: module.Glossary
+  }))
+); -->
 import { Box, Container } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import {
@@ -16,6 +25,20 @@ const speak = (textToSpeak: string) => {
 };
 
 export const App = () => {
+<!--   return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Homepage />} />
+        <Route
+          path="/glossary"
+          element={
+            <Suspense fallback={<p>Загрузка страницы...</p>}>
+              <Glossary />
+            </Suspense>
+          }
+        />
+      </Routes>
+    </BrowserRouter> -->
   const [modal, setModal] = useState(false);
 
   const setLanguages = useTranslateStore((state) => state.setLanguages);
