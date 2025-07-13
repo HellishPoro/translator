@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import {
   ActionIcon,
   Alert,
@@ -19,23 +19,33 @@ import { useTranslation } from '../../hooks';
 import { LanguageSelector } from '../LanguageSelector/LanguageSelector';
 import { useGlossaryStore } from '../../store/useGlossaryStore';
 import { notifications } from '@mantine/notifications';
+import { useFloatingTooltip } from '../../hooks/useFloatingTooltip';
+
 
 interface TooltipTranslatorProps {
-  setOpenedTooltip: (i: boolean) => void;
-  selectedText: string;
   speak: (text: string) => void;
 }
 
-export const TooltipTranslator = (props: TooltipTranslatorProps) => {
-  const { setOpenedTooltip, selectedText, speak } = props;
-  const { selectedLanguage, setSelectedLanguage, languages } = useTranslateStore();
-  const { translateText, isLoading, error, clearError, isDetectingLanguage } = useTranslation();
+export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
+  const { speak } = props;
+  const { selectedLanguage, setSelectedLanguage, languages } =
+    useTranslateStore();
+  const { translateText, isLoading, error, clearError, isDetectingLanguage } =
+    useTranslation();
   const [translatedText, setTranslatedText] = useState<string>('');
+  const {
+    refs,
+    floatingStyles,
+    openedTooltip,
+    getFloatingProps,
+    closeTooltip,
+    sourceText,
+  } = useFloatingTooltip();
   const { addItem: addToGlossary } = useGlossaryStore();
   const [existsInGlossary, setExistsInGlossary] = useState(false);
 
   const handleCloseTooltip = () => {
-    setOpenedTooltip(false);
+    closeTooltip();
     setTranslatedText('');
     clearError();
   };
@@ -69,9 +79,12 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
   };
 
   useEffect(() => {
-    if (selectedText.trim()) {
+    if (sourceText.trim()) {
       const doTranslation = async () => {
-        const translated = await translateText(selectedText, selectedLanguage.target.value);
+        const translated = await translateText(
+          sourceText,
+          selectedLanguage.target.value
+        );
 
         if (translated) {
           setTranslatedText(translated.text);
@@ -91,9 +104,16 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
 
       doTranslation();
     }
-  }, [selectedText, selectedLanguage.target]);
+  }, [sourceText, selectedLanguage.target]);
 
   return (
+
+            openedTooltip && (
+      <Box
+        ref={refs.setFloating}
+        style={{ ...floatingStyles }}
+        {...getFloatingProps()}
+      >
     <Paper
       shadow="xl"
       p="md"
@@ -172,19 +192,16 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
                   </ActionIcon>
                 </Tooltip>
               </Group>
-            </Group>
-            <Text size="sm" fw={600} style={{ wordBreak: 'break-word' }}>
-              {selectedText}
-            </Text>
-          </Flex>
-        </Box>
 
-        <Box>
-          <Flex direction="column" mb="xs">
-            <Group justify="space-between" mb="xs">
-              <Text size="sm" c="dimmed" fw={500}>
-                Translation:
-              </Text>
+            </Group>
+
+            <LanguageSelector
+              languages={languages}
+              value={selectedLanguage}
+              onChange={setSelectedLanguage}
+              swapLanguages={false}
+              isDetectingLanguage={isDetectingLanguage}
+            />
 
               <Tooltip
                 label="Listen"
@@ -210,8 +227,26 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
                 <Loader size="sm" />
                 <Text size="sm" c="dimmed">
                   Переводим...
+
+<!--             {/* <Divider /> */}
+
+            <Flex direction="column">
+              <Group justify="space-between">
+                <Text size="sm" c="dimmed" fw={500}>
+                  Original:
+ -->
                 </Text>
+
+                <ActionIcon
+                  variant="subtle"
+                  color="indigo.4"
+                  size="sm"
+                  onClick={() => speak(sourceText)}
+                >
+                  <IconVolume size={18} />
+                </ActionIcon>
               </Group>
+
             ) : error ? (
               <Alert icon={<IconAlertCircle size={16} />} color="red" variant="light">
                 {error}
@@ -219,11 +254,56 @@ export const TooltipTranslator = (props: TooltipTranslatorProps) => {
             ) : (
               <Text size="sm" fw={600} c="indigo.7" style={{ wordBreak: 'break-word' }}>
                 {translatedText || 'Выберите текст для перевода'}
+
               </Text>
-            )}
-          </Flex>
-        </Box>
-      </Stack>
-    </Paper>
+            </Flex>
+
+            <Divider />
+
+            <Flex direction="column" mb="xs">
+              <Group justify="space-between" mb="xs">
+                <Text size="sm" c="dimmed" fw={500}>
+                  Translated text:
+                </Text>
+
+                <ActionIcon
+                  variant="subtle"
+                  color="indigo.4"
+                  size="sm"
+                  onClick={() => speak(translatedText || '')}
+                >
+                  <IconVolume size={18} />
+                </ActionIcon>
+              </Group>
+              {isLoading ? (
+                <Group gap="xs">
+                  <Loader size="xs" />
+                  <Text size="sm" c="dimmed">
+                    Translate...
+                  </Text>
+                </Group>
+              ) : error ? (
+                <Alert
+                  icon={<IconAlertCircle size={16} />}
+                  color="red"
+                  variant="light"
+                >
+                  {error}
+                </Alert>
+              ) : (
+                <Text
+                  size="sm"
+                  fw={600}
+                  c="indigo.7"
+                  style={{ wordBreak: 'break-word' }}
+                >
+                  {translatedText || 'Выберите текст для перевода'}
+                </Text>
+              )}
+            </Flex>
+          </Stack>
+        </Paper>
+      </Box>
+    )
   );
-};
+});

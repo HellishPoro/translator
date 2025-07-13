@@ -1,7 +1,7 @@
 import { List, Paper, Text, Title, Loader, Box } from '@mantine/core';
+import { memo } from 'react';
 
 interface TextWithTooltipProps {
-  onMouseUp: () => void;
   pageContent: {
     title: string;
     mainText: string;
@@ -9,47 +9,43 @@ interface TextWithTooltipProps {
   isTranslating: boolean;
 }
 
-export const TextWithTooltip = ({
-  onMouseUp,
-  pageContent,
-  isTranslating
-}: TextWithTooltipProps) => {
-  if (isTranslating) {
+export const TextWithTooltip = memo(
+  ({ pageContent, isTranslating }: TextWithTooltipProps) => {
+    if (isTranslating) {
+      return (
+        <Box ta="center" py="xl">
+          <Loader size="lg" />
+          <Text mt="md" c="dimmed">
+            Переводим контент...
+          </Text>
+        </Box>
+      );
+    }
+
     return (
-      <Box ta="center" py="xl">
-        <Loader size="lg" />
-        <Text mt="md" c="dimmed">
-          Переводим контент...
-        </Text>
-      </Box>
-    );
-  }
-
-  return (
-    <>
-      <Paper
-        shadow="md"
-        radius="md"
-        p="lg"
-        withBorder
-        onMouseUp={onMouseUp}
-        style={{ whiteSpace: 'pre-line', cursor: 'text' }}
-      >
-        <Title
-          ta={'center'}
-          style={{ borderBottom: '1px solid indigo' }}
-          fz="h1"
-          size="xl"
-          c="indigo.4"
+      <>
+        <Paper
+          shadow="md"
+          radius="md"
+          p="lg"
+          withBorder
+          style={{ whiteSpace: 'pre-line', cursor: 'text' }}
         >
-          {pageContent.title}
-        </Title>
-        <Text size="lg" c="black" ta={'center'} mt={20}>
-          {pageContent.mainText}
-        </Text>
-      </Paper>
+          <Title
+            ta={'center'}
+            style={{ borderBottom: '1px solid indigo' }}
+            fz="h1"
+            size="xl"
+            c="indigo.4"
+          >
+            {pageContent.title}
+          </Title>
+          <Text size="lg" c="black" ta={'center'}>
+            {pageContent.mainText}
+          </Text>
+        </Paper>
 
-      <Paper shadow="xs" radius="md" p="md" withBorder mt={50}>
+        <Paper shadow="xs" radius="md" p="md" withBorder mt={50}>
         <Title size="md" mb="xs" c="indigo.6">
           Как пользоваться приложением
         </Title>
@@ -79,6 +75,7 @@ export const TextWithTooltip = ({
           </List.Item>
         </List>
       </Paper>
-    </>
-  );
-};
+      </>
+    );
+  }
+);
