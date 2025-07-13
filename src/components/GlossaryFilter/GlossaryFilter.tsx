@@ -26,7 +26,7 @@ export const GlossaryFilter = ({ filter, onFilterChange, languages }: GlossaryFi
   const hasActiveFilters = filter.search || filter.sourceLanguage || filter.targetLanguage;
 
   return (
-    <Group gap="md" align="flex-end">
+    <Group gap="md" align="center">
       <TextInput
         placeholder="Search words..."
         value={filter.search}

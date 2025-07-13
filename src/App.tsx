@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Homepage } from './pages';
 import { lazy, Suspense } from 'react';
+import { Center, Loader } from '@mantine/core';
 const Glossary = lazy(() =>
   import('./pages').then((module) => ({
     default: module.Glossary,
@@ -15,7 +16,13 @@ export const App = () => {
         <Route
           path="/glossary"
           element={
-            <Suspense fallback={<p>Загрузка страницы...</p>}>
+            <Suspense
+              fallback={
+                <Center h="100vh">
+                  <Loader color="blue" size="lg" />
+                </Center>
+              }
+            >
               <Glossary />
             </Suspense>
           }

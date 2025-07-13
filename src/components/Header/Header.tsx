@@ -1,6 +1,7 @@
 import { Button, Container, Group, Select, Title } from '@mantine/core';
 import { useTranslateStore } from '../../store/useTranslateStore';
 import { Link } from 'react-router-dom';
+import { IconBook, IconLanguage } from '@tabler/icons-react';
 
 interface HeaderProps {
   pageLang: string | null;
@@ -15,28 +16,38 @@ export function Header(props: HeaderProps) {
   return (
     <Container size="xl">
       <Group justify="space-between" align="center" mb="md">
-        <Title order={1} fw={700} lh={1}>
-          Tooltip Translator
-        </Title>
+        <Group gap="sm">
+          <IconLanguage size={32} color="var(--mantine-color-indigo-6)" />
+          <Title order={1} c="indigo.6" fw={700}>
+            Tooltip Translator
+          </Title>
+        </Group>
 
         <Group gap="sm">
           <Select
-            placeholder="Выберите язык страницы"
+            placeholder="Page language"
             value={pageLang}
             onChange={setPageLang}
-            data={languages.map((lang) => ({
+            data={languages.map(lang => ({
               value: lang.code,
-              label: lang.name,
+              label: lang.name
             }))}
             searchable
-            nothingFoundMessage="Нет совпадений"
+            nothingFoundMessage="No matches"
             size="sm"
+            w={180}
           />
           <Button variant="filled" color="indigo.5" onClick={onOpenModal}>
-            Open translator
+            Open Translator
           </Button>
 
-          <Button component={Link} to="/glossary" variant="filled" color="indigo.5">
+          <Button
+            component={Link}
+            to="/glossary"
+            variant="outline"
+            color="indigo.5"
+            leftSection={<IconBook size={16} />}
+          >
             Glossary
           </Button>
         </Group>
