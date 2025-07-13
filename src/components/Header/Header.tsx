@@ -23,9 +23,9 @@ export function Header(props: HeaderProps) {
             placeholder="Выберите язык страницы"
             value={pageLang}
             onChange={setPageLang}
-            data={languages.map(lang => ({
+            data={languages.map((lang) => ({
               value: lang.code,
-              label: lang.name
+              label: lang.name,
             }))}
             searchable
             nothingFoundMessage="Нет совпадений"
