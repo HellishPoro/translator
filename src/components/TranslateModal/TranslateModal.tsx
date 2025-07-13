@@ -57,8 +57,6 @@ export const TranslateModal = ({
 
   const clipboard = useClipboard({ timeout: 500 });
 
-  const clipboard = useClipboard({timeout: 500})
-
   useEffect(() => {
     const prev = prevSelectedLanguageRef.current;
 
