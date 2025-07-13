@@ -9,7 +9,7 @@ export const useSpeechRecognition = (onResult: (text: string) => void) => {
         if (!SpeechRecognition) return
 
         const recognition = new SpeechRecognition()
-        recognition.lang = 'ru-RU'
+        // recognition.lang = 'auto'
         recognition.interimResults = false
         recognition.continuous = false
 
