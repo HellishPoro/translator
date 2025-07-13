@@ -63,7 +63,6 @@ export const TranslateModal = ({
     setText('');
     setTranslation('');
     clearError();
-    // setSelectedLanguage(initialSelectedLanguage);
   };
 
   const handleAddToGlossary = () => {

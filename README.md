@@ -1,69 +1,193 @@
-# Smart translator
+# Tooltip Translator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Tooltip Translator** — расширяемое React-приложение для перевода текста с поддержкой:
 
-Currently, two official plugins are available:
+- перевода на лету через API,
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- распознавания речи,
 
-## Expanding the ESLint configuration
+- озвучивания текста (Text-to-Speech),
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- глоссария,
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- фильтрации и управления словарем.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname
-      }
-      // other options...
-    }
-  }
-]);
+## Технологии
+
+- **React 18+**
+
+- **TypeScript 5+**
+
+- **Vite**
+
+- **Zustand** — управление глобальным состоянием
+
+- **Mantine UI** — UI-компоненты и модальные окна
+
+- **Axios** — HTTP-запросы
+
+- **Tabler Icons** — иконки
+
+- **Custom hooks** — `useSpeechRecognition`, `useTranslation`
+
+- **Clipboard**, **Text-to-Speech**, **Speech Recognition**
+
+---
+
+## Структура проекта
+
+src/
+
+├── api/ # Работа с API (axios, перевод, языки)
+
+│
+
+├── components/ # UI-компоненты
+
+│ ├── GlossaryFilter/ # Фильтр для глоссария
+
+│ ├── GlossaryItem/ # Элемент глоссария
+
+│ ├── Header/ # Верхняя панель с кнопками
+
+│ ├── LanguageSelector/ # Выпадающий список для выбора языков
+
+│ ├── TextWithTooltip/ # Компонент текста с тултипами
+
+│ ├── TooltipTranslator/ # Тултип-переводчик
+
+│ └── TranslateModal/ # Модальное окно для перевода
+
+│ └── index.ts # Индексация и экспорт компонентов
+
+│
+
+├── constants/ # Константы (например, языки по умолчанию)
+
+│
+
+├── hooks/ # Кастомные React-хуки
+
+│
+
+├── pages/ # Страницы приложения
+
+│
+
+├── store/ # Zustand-хранилища (переводы, глоссарий и т.д.)
+
+│
+
+├── types/ # Глобальные TypeScript-типы
+
+│
+
+├── utils/ # Утилиты и вспомогательные функции
+
+│
+
+├── App.tsx # Главный компонент приложения
+
+├── main.tsx # Точка входа в приложение
+
+---
+
+## Основные компоненты
+
+### TranslateModal
+
+Модальное окно для ввода текста, перевода и прослушивания:
+
+Использует LanguageSelector для выбора языков.
+
+Распознает речь с помощью useSpeechRecognition.
+
+Автоматически переводит с задержкой (debounce).
+
+Отображает ошибку и позволяет копировать результат.
+
+### TooltipTranslator
+
+При выделении слова отображается tooltip с переводом.
+
+Поддерживает озвучку оригинального и переведённого текста.
+
+Возможность добавления слова в глоссарий.
+
+### GlossaryFilter
+
+Хранит сохраненные слова и их перевод.
+
+Возможность удаления слов.
+
+Можно использовать фильтрацию.
+
+---
+
+## API
+
+В .env задается переменная:
+
+```VITE_API_BASE_URL=https://example.com/api```
+
+---
+
+## Вызовы:
+
+POST /d4evir8cmhdpro9juk3s — список языков
+
+POST /d4efot9b5crnbr09g2mt — перевод текста
+
+POST /d4e0ng82lsmf6gpteqpe — определение языка
+
+---
+
+## Озвучка и распознавание речи
+
+Используется Web Speech API:
+
+Распознавание — SpeechRecognition (через кастомный useSpeechRecognition)
+
+Озвучка — SpeechSynthesis
+
+---
+
+## Состояния (Zustand)
+
+useTranslateStore
+
+sourceText, sourceLanguageCode, targetLanguageCode
+
+Список доступных языков
+
+useGlossaryStore
+
+Глоссарий со словами и переводами
+
+Фильтрация, добавление и удаление
+
+---
+
+## Разработка
+
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+# Установка зависимостей
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
+npm install
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname
-      }
-      // other options...
-    }
-  }
-]);
+# Запуск в dev-режиме
+
+npm run dev
+
+# Сборка
+
+npm run build
+
+# Просмотр сборки
+
+npm run preview
+
 ```
