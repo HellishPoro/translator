@@ -44,7 +44,7 @@ export const TextWithTooltip = ({
         >
           {pageContent.title}
         </Title>
-        <Text size="lg" c="black" ta={'center'}>
+        <Text size="lg" c="black" ta={'center'} mt={20}>
           {pageContent.mainText}
         </Text>
       </Paper>
@@ -69,9 +69,14 @@ export const TextWithTooltip = ({
             По нажатию на кнопку "Open translator" откроется модальное окно с полноценным
             переводчиком.
           </List.Item>
-          <List.Item></List.Item>
-          <List.Item></List.Item>
-          <List.Item></List.Item>
+          <List.Item>
+            Tooltip имеет возможность сохранять выделенный текст и перевод в словарь.
+          </List.Item>
+          <List.Item>Можно перейти на страницу глоссария, нажав на кнопку "Glossary".</List.Item>
+          <List.Item>
+            Сам глоссарий также имеет ряд возможностей: добавление/удалении записи, фильтрация по
+            языкам, поиск (на обоих языках).
+          </List.Item>
         </List>
       </Paper>
     </>

@@ -1,5 +1,6 @@
 import { Button, Container, Group, Select, Title } from '@mantine/core';
 import { useTranslateStore } from '../../store/useTranslateStore';
+import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   pageLang: string | null;
@@ -31,7 +32,13 @@ export function Header(props: HeaderProps) {
             nothingFoundMessage="Нет совпадений"
             size="sm"
           />
-          <Button onClick={onOpenModal}>Open translator</Button>
+          <Button variant="filled" color="indigo.5" onClick={onOpenModal}>
+            Open translator
+          </Button>
+
+          <Button component={Link} to="/glossary" variant="filled" color="indigo.5">
+            Glossary
+          </Button>
         </Group>
       </Group>
     </Container>
