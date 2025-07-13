@@ -4,7 +4,7 @@ import {
   Modal,
   Textarea,
   Title,
-  Loader,
+//   Loader,
   Text,
 } from '@mantine/core';
 import { useEffect, useRef, useState } from 'react';
@@ -12,11 +12,12 @@ import {
   LanguageSelector,
   type SelectedValue,
 } from '../LanguageSelector/LanguageSelector';
-import { IconMicrophone, IconMicrophoneOff, IconVolume } from '@tabler/icons-react';
+import { IconMicrophone, IconMicrophoneOff, IconVolume, IconCopy } from '@tabler/icons-react';
 import { useTranslation } from '../../hooks/useTranslation';
 import { initialSelectedLanguage } from '../../constants/initialSelectedLanguage';
 import { useTranslateStore } from '../../store/useTranslateStore';
 import { useSpeechRecognition } from "../../hooks/useSpeechRecognition";
+import { useClipboard } from '@mantine/hooks';
 
 export const TranslateModal = ({
   opened,
@@ -45,6 +46,8 @@ export const TranslateModal = ({
   const {isListening, startListening, stopListening} = useSpeechRecognition((spokenText)=>{
         setText((prevtext) => `${prevtext} ${spokenText}`.trim())
   })
+
+  const clipboard = useClipboard({timeout: 500})
 
   useEffect(() => {
     const prev = prevSelectedLanguageRef.current;
@@ -173,7 +176,14 @@ export const TranslateModal = ({
             size="lg"
             bottom={75}
             left={759}
-            onClick={isListening ? stopListening : startListening}
+            onClick={()=>{
+                if(isListening){
+                    stopListening()
+                }else{
+                    startListening()
+                    setText('')
+                }}
+            }
             >
             {isListening ? <IconMicrophoneOff size={24} /> : <IconMicrophone size={24} />}
           </ActionIcon>
@@ -182,11 +192,18 @@ export const TranslateModal = ({
       <Group>
         <Textarea
           readOnly
-          value={isLoading ? 'Loading...' : translation}
-          placeholder="Translation"
+          value={clipboard.copied ? 'Copied' : translation }
+          placeholder={isLoading ? "Loading..." :"Translation"}
           size="lg"
-          style={{ width: '100%' }}
-        />
+          style={{ 
+            width: '100%',
+          }}
+          styles={{
+            input: {
+                color: clipboard.copied ? "green" : undefined
+            }
+          }}
+          />
         <ActionIcon
           variant="subtle"
           color="indigo.4"
@@ -194,9 +211,20 @@ export const TranslateModal = ({
           bottom={90}
           left={810}
           onClick={() => speak(translation)}
-        >
+          >
           <IconVolume size={24} />
         </ActionIcon>
+        <ActionIcon
+          variant="subtle"
+          color="indigo.4"
+          size="lg"
+          bottom={60}
+          left={759}
+          onClick={() => clipboard.copy(translation)}
+          >
+            <IconCopy size={24}/>
+        </ActionIcon>
+        {/* {isLoading && <Loader size={30}/>} */}
       </Group>
 
       {error && (
@@ -204,8 +232,6 @@ export const TranslateModal = ({
           {error}
         </Text>
       )}
-
-      {isLoading && <Loader mt="md" />}
     </Modal>
   );
 };
