@@ -21,26 +21,17 @@ import { useGlossaryStore } from '../../store/useGlossaryStore';
 import { notifications } from '@mantine/notifications';
 import { useFloatingTooltip } from '../../hooks/useFloatingTooltip';
 
-
 interface TooltipTranslatorProps {
   speak: (text: string) => void;
 }
 
 export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
   const { speak } = props;
-  const { selectedLanguage, setSelectedLanguage, languages } =
-    useTranslateStore();
-  const { translateText, isLoading, error, clearError, isDetectingLanguage } =
-    useTranslation();
+  const { selectedLanguage, setSelectedLanguage, languages } = useTranslateStore();
+  const { translateText, isLoading, error, clearError, isDetectingLanguage } = useTranslation();
   const [translatedText, setTranslatedText] = useState<string>('');
-  const {
-    refs,
-    floatingStyles,
-    openedTooltip,
-    getFloatingProps,
-    closeTooltip,
-    sourceText,
-  } = useFloatingTooltip();
+  const { refs, floatingStyles, openedTooltip, getFloatingProps, closeTooltip, sourceText } =
+    useFloatingTooltip();
   const { addItem: addToGlossary } = useGlossaryStore();
   const [existsInGlossary, setExistsInGlossary] = useState(false);
 
@@ -54,7 +45,7 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
     if (!translatedText) return;
 
     const success = await addToGlossary({
-      originalText: selectedText,
+      originalText: sourceText,
       translatedText: translatedText,
       sourceLanguage: selectedLanguage.source.value,
       targetLanguage: selectedLanguage.target.value,
@@ -81,10 +72,7 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
   useEffect(() => {
     if (sourceText.trim()) {
       const doTranslation = async () => {
-        const translated = await translateText(
-          sourceText,
-          selectedLanguage.target.value
-        );
+        const translated = await translateText(sourceText, selectedLanguage.target.value);
 
         if (translated) {
           setTranslatedText(translated.text);
@@ -107,92 +95,27 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
   }, [sourceText, selectedLanguage.target]);
 
   return (
+    openedTooltip && (
+      <Box ref={refs.setFloating} style={{ ...floatingStyles }} {...getFloatingProps()}>
+        <Paper
+          shadow="xl"
+          p="md"
+          radius="md"
+          style={{
+            maxWidth: 340,
+            minWidth: 300,
+            border: '1px solid #e9ecef'
+          }}
+        >
+          <Stack gap="sm">
+            <Group justify="space-between" align="center" mb="xs">
+              <Title variant="light" c="indigo.4" size="lg">
+                Translation
+              </Title>
 
-            openedTooltip && (
-      <Box
-        ref={refs.setFloating}
-        style={{ ...floatingStyles }}
-        {...getFloatingProps()}
-      >
-    <Paper
-      shadow="xl"
-      p="md"
-      radius="md"
-      style={{
-        maxWidth: 340,
-        minWidth: 300,
-        border: '1px solid #e9ecef'
-      }}
-    >
-      <Stack gap="sm">
-        <Group justify="space-between" align="center" mb="xs">
-          <Title variant="light" c="indigo.4" size="lg">
-            Translation
-          </Title>
-
-          <ActionIcon variant="subtle" color="gray" size="sm" onClick={handleCloseTooltip}>
-            <IconX size={18} />
-          </ActionIcon>
-        </Group>
-
-        <LanguageSelector
-          languages={languages}
-          value={selectedLanguage}
-          onChange={setSelectedLanguage}
-          swapLanguages={false}
-          isDetectingLanguage={isDetectingLanguage}
-        />
-
-        <Divider />
-
-        <Box>
-          <Flex direction="column" mb="sm">
-            <Group justify="space-between" mb="xs">
-              <Text size="sm" c="dimmed" fw={500}>
-                Original:
-              </Text>
-
-              <Group gap={5}>
-                <Tooltip
-                  label={existsInGlossary ? 'Already in glossary' : 'Add to glossary'}
-                  withArrow
-                  zIndex={2}
-                  color="gray"
-                  position="bottom"
-                  fz="xs"
-                  offset={5}
-                >
-                  <ActionIcon
-                    variant="subtle"
-                    color={existsInGlossary ? 'gray' : 'lime.6'}
-                    size="sm"
-                    onClick={handleAddToGlossary}
-                    disabled={!translatedText || existsInGlossary}
-                  >
-                    <IconDeviceIpadPlus size={18} />
-                  </ActionIcon>
-                </Tooltip>
-
-                <Tooltip
-                  label="Listen"
-                  withArrow
-                  zIndex={2}
-                  color="gray"
-                  position="bottom"
-                  fz="xs"
-                  offset={5}
-                >
-                  <ActionIcon
-                    variant="subtle"
-                    color="indigo.4"
-                    size="sm"
-                    onClick={() => speak(selectedText)}
-                  >
-                    <IconVolume size={18} />
-                  </ActionIcon>
-                </Tooltip>
-              </Group>
-
+              <ActionIcon variant="subtle" color="gray" size="sm" onClick={handleCloseTooltip}>
+                <IconX size={18} />
+              </ActionIcon>
             </Group>
 
             <LanguageSelector
@@ -203,58 +126,57 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
               isDetectingLanguage={isDetectingLanguage}
             />
 
-              <Tooltip
-                label="Listen"
-                withArrow
-                zIndex={2}
-                color="gray"
-                position="bottom"
-                fz="xs"
-                offset={5}
-              >
-                <ActionIcon
-                  variant="subtle"
-                  color="indigo.4"
-                  size="sm"
-                  onClick={() => speak(translatedText || '')}
-                >
-                  <IconVolume size={18} />
-                </ActionIcon>
-              </Tooltip>
-            </Group>
-            {isLoading ? (
-              <Group gap="xs">
-                <Loader size="sm" />
-                <Text size="sm" c="dimmed">
-                  Переводим...
-
-<!--             {/* <Divider /> */}
+            {/* <Divider /> */}
 
             <Flex direction="column">
               <Group justify="space-between">
                 <Text size="sm" c="dimmed" fw={500}>
                   Original:
- -->
                 </Text>
 
-                <ActionIcon
-                  variant="subtle"
-                  color="indigo.4"
-                  size="sm"
-                  onClick={() => speak(sourceText)}
-                >
-                  <IconVolume size={18} />
-                </ActionIcon>
+                <Group gap={5}>
+                  <Tooltip
+                    label={existsInGlossary ? 'Already in glossary' : 'Add to glossary'}
+                    withArrow
+                    zIndex={2}
+                    color="gray"
+                    position="bottom"
+                    fz="xs"
+                    offset={5}
+                  >
+                    <ActionIcon
+                      variant="subtle"
+                      color={existsInGlossary ? 'gray' : 'lime.6'}
+                      size="sm"
+                      onClick={handleAddToGlossary}
+                      disabled={!translatedText || existsInGlossary}
+                    >
+                      <IconDeviceIpadPlus size={18} />
+                    </ActionIcon>
+                  </Tooltip>
+
+                  <Tooltip
+                    label="Listen"
+                    withArrow
+                    zIndex={2}
+                    color="gray"
+                    position="bottom"
+                    fz="xs"
+                    offset={5}
+                  >
+                    <ActionIcon
+                      variant="subtle"
+                      color="indigo.4"
+                      size="sm"
+                      onClick={() => speak(sourceText)}
+                    >
+                      <IconVolume size={18} />
+                    </ActionIcon>
+                  </Tooltip>
+                </Group>
               </Group>
-
-            ) : error ? (
-              <Alert icon={<IconAlertCircle size={16} />} color="red" variant="light">
-                {error}
-              </Alert>
-            ) : (
-              <Text size="sm" fw={600} c="indigo.7" style={{ wordBreak: 'break-word' }}>
-                {translatedText || 'Выберите текст для перевода'}
-
+              <Text size="sm" fw={600} style={{ wordBreak: 'break-word' }}>
+                {sourceText}
               </Text>
             </Flex>
 
@@ -283,20 +205,11 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
                   </Text>
                 </Group>
               ) : error ? (
-                <Alert
-                  icon={<IconAlertCircle size={16} />}
-                  color="red"
-                  variant="light"
-                >
+                <Alert icon={<IconAlertCircle size={16} />} color="red" variant="light">
                   {error}
                 </Alert>
               ) : (
-                <Text
-                  size="sm"
-                  fw={600}
-                  c="indigo.7"
-                  style={{ wordBreak: 'break-word' }}
-                >
+                <Text size="sm" fw={600} c="indigo.7" style={{ wordBreak: 'break-word' }}>
                   {translatedText || 'Выберите текст для перевода'}
                 </Text>
               )}
