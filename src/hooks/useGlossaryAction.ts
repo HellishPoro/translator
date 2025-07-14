@@ -1,11 +1,10 @@
-import { useState } from 'react';
 import { notifications } from '@mantine/notifications';
 import { useGlossaryStore } from '../store/useGlossaryStore';
 import type { GlossaryItem } from '../types/glossary.types';
 
 export const useGlossaryAction = () => {
   const addItem = useGlossaryStore(state => state.addItem);
-  const [exists, setExists] = useState(false);
+  const items = useGlossaryStore(state => state.items);
 
   const addToGlossary = async (item: Omit<GlossaryItem, 'id' | 'dateAdded'>) => {
     const success = await addItem(item);
@@ -16,21 +15,28 @@ export const useGlossaryAction = () => {
         message: 'Word added to glossary!',
         color: 'green'
       });
-      setExists(true);
     } else {
       notifications.show({
         title: 'Already exists',
         message: 'This word is already in your glossary',
         color: 'orange'
       });
-      setExists(true);
     }
 
     return success;
   };
 
+  const checkIfExists = (text: string, sourceLang: string, targetLang: string) => {
+    return items.some(
+      item =>
+        item.originalText === text &&
+        item.sourceLanguage === sourceLang &&
+        item.targetLanguage === targetLang
+    );
+  };
+
   return {
-    existsInGlossary: exists,
-    addToGlossary
+    addToGlossary,
+    checkIfExists
   };
 };

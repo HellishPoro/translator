@@ -11,7 +11,7 @@ import {
   Stack,
   Text,
   Title,
-  Tooltip,
+  Tooltip
 } from '@mantine/core';
 import {
   IconAlertCircle,
@@ -19,7 +19,7 @@ import {
   IconCopy,
   IconDeviceIpadPlus,
   IconVolume,
-  IconX,
+  IconX
 } from '@tabler/icons-react';
 import { useTranslateStore } from '../../store/useTranslateStore';
 import { useTranslation } from '../../hooks';
@@ -34,16 +34,18 @@ interface TooltipTranslatorProps {
 
 export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
   const { speak } = props;
-  const { selectedLanguage, setSelectedLanguage, languages } =
-    useTranslateStore();
-  const { translateText, isLoading, error, clearError, isDetectingLanguage } =
-    useTranslation();
+  const { selectedLanguage, setSelectedLanguage, languages } = useTranslateStore();
+  const { translateText, isLoading, error, clearError, isDetectingLanguage } = useTranslation();
   const [translatedText, setTranslatedText] = useState<string>('');
   const { refs, floatingStyles, openedTooltip, getFloatingProps, closeTooltip, sourceText } =
     useFloatingTooltip();
-  const { addToGlossary, existsInGlossary } = useGlossaryAction();
+  const { addToGlossary, checkIfExists } = useGlossaryAction();
+  const existsInGlossary = checkIfExists(
+    sourceText,
+    selectedLanguage.source.value,
+    selectedLanguage.target.value
+  );
   const clipboard = useClipboard({ timeout: 500 });
-
 
   const handleCloseTooltip = () => {
     closeTooltip();
@@ -60,17 +62,14 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
       sourceLanguage: selectedLanguage.source.value,
       targetLanguage: selectedLanguage.target.value,
       sourceLanguageName: selectedLanguage.source.label,
-      targetLanguageName: selectedLanguage.target.label,
+      targetLanguageName: selectedLanguage.target.label
     });
   };
 
   useEffect(() => {
     if (sourceText.trim()) {
       const doTranslation = async () => {
-        const translated = await translateText(
-          sourceText,
-          selectedLanguage.target.value
-        );
+        const translated = await translateText(sourceText, selectedLanguage.target.value);
 
         if (translated) {
           setTranslatedText(translated.text);
@@ -79,12 +78,10 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
               source: {
                 value: translated.detectedSourceLanguage,
                 label:
-                  languages.find(
-                    (language) =>
-                      language.code === translated.detectedSourceLanguage
-                  )?.name || translated.detectedSourceLanguage,
+                  languages.find(language => language.code === translated.detectedSourceLanguage)
+                    ?.name || translated.detectedSourceLanguage
               },
-              target: selectedLanguage.target,
+              target: selectedLanguage.target
             });
           }
         }
@@ -96,11 +93,7 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
 
   return (
     openedTooltip && (
-      <Box
-        ref={refs.setFloating}
-        style={{ ...floatingStyles }}
-        {...getFloatingProps()}
-      >
+      <Box ref={refs.setFloating} style={{ ...floatingStyles }} {...getFloatingProps()}>
         <Paper
           shadow="xl"
           p="md"
@@ -108,7 +101,7 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
           style={{
             maxWidth: 340,
             minWidth: 300,
-            border: '1px solid #e9ecef',
+            border: '1px solid #e9ecef'
           }}
         >
           <Stack gap="sm">
@@ -117,12 +110,7 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
                 Translation
               </Title>
 
-              <ActionIcon
-                variant="subtle"
-                color="gray"
-                size="sm"
-                onClick={handleCloseTooltip}
-              >
+              <ActionIcon variant="subtle" color="gray" size="sm" onClick={handleCloseTooltip}>
                 <IconX size={18} />
               </ActionIcon>
             </Group>
@@ -143,11 +131,7 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
 
                 <Group gap={5}>
                   <Tooltip
-                    label={
-                      existsInGlossary
-                        ? 'Already in glossary'
-                        : 'Add to glossary'
-                    }
+                    label={existsInGlossary ? 'Already in glossary' : 'Add to glossary'}
                     withArrow
                     zIndex={2}
                     color="gray"
@@ -219,9 +203,7 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
                       ) : (
                         <IconCopy
                           size={18}
-                          visibility={
-                            translatedText.length > 0 ? 'visible' : 'hidden'
-                          }
+                          visibility={translatedText.length > 0 ? 'visible' : 'hidden'}
                         />
                       )}
                     </ActionIcon>
@@ -255,20 +237,11 @@ export const TooltipTranslator = memo((props: TooltipTranslatorProps) => {
                   </Text>
                 </Group>
               ) : error ? (
-                <Alert
-                  icon={<IconAlertCircle size={16} />}
-                  color="red"
-                  variant="light"
-                >
+                <Alert icon={<IconAlertCircle size={16} />} color="red" variant="light">
                   {error}
                 </Alert>
               ) : (
-                <Text
-                  size="sm"
-                  fw={600}
-                  c="indigo.7"
-                  style={{ wordBreak: 'break-word' }}
-                >
+                <Text size="sm" fw={600} c="indigo.7" style={{ wordBreak: 'break-word' }}>
                   {translatedText || 'Выберите текст для перевода'}
                 </Text>
               )}
