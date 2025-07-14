@@ -36,7 +36,12 @@ export const TranslateModal = ({
     setText(prevtext => `${prevtext} ${spokenText}`.trim());
   });
   const clipboard = useClipboard({ timeout: 500 });
-  const { addToGlossary, existsInGlossary } = useGlossaryAction();
+  const { addToGlossary, checkIfExists } = useGlossaryAction();
+  const existsInGlossary = checkIfExists(
+    text.trim(),
+    selectedLanguage.source.value,
+    selectedLanguage.target.value
+  );
 
   useEffect(() => {
     const prev = prevSelectedLanguageRef.current;
